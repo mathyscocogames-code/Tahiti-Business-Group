@@ -126,13 +126,17 @@ function updateSousCatsDep(cat) {
   const sel = document.getElementById('id_sous_categorie');
   if (!sel) return;
   sel.innerHTML = '<option value="">— Toutes / Général</option>';
-  (SOUS_CATS_DEP[cat] || []).forEach(({value, label}) => {
+  const opts = SOUS_CATS_DEP[cat] || [];
+  opts.forEach(({value, label}) => {
     const opt = document.createElement('option');
     opt.value = value; opt.textContent = label;
     sel.appendChild(opt);
   });
-  renderSpecs('');
-  adaptPrix(cat, '');
+  // Auto-sélectionne la première sous-catégorie pour afficher les specs immédiatement
+  const firstSousCat = opts.length > 0 ? opts[0].value : '';
+  if (firstSousCat) sel.value = firstSousCat;
+  renderSpecs(firstSousCat);
+  adaptPrix(cat, firstSousCat);
 }
 
 function togglePrix(cat) {
@@ -164,12 +168,8 @@ function adaptPrix(cat, sousCat) {
 
 const catSelDep = document.getElementById('id_categorie');
 if (catSelDep) {
-  catSelDep.addEventListener('change', () => {
-    updateSousCatsDep(catSelDep.value);
-    adaptPrix(catSelDep.value, '');
-  });
+  catSelDep.addEventListener('change', () => updateSousCatsDep(catSelDep.value));
   updateSousCatsDep(catSelDep.value);
-  adaptPrix(catSelDep.value, '');
 }
 
 // ─── Formulaire adaptatif — définitions par sous-catégorie ───────────────────
