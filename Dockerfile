@@ -18,9 +18,5 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-# Migrations + démarrage
-CMD python manage.py migrate --noinput && \
-    gunicorn tahiti_business.wsgi \
-    --bind 0.0.0.0:${PORT:-8000} \
-    --workers 2 \
-    --timeout 120
+# Migrations + démarrage (sh -c force l'expansion de $PORT)
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn tahiti_business.wsgi --bind 0.0.0.0:${PORT:-8000} --workers 2 --timeout 120"]

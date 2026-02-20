@@ -1,7 +1,7 @@
 [build]
-builder = "nixpacks"
+builder = "DOCKERFILE"
 
 [deploy]
-startCommand = "gunicorn tahiti_business.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
-restartPolicyType = "on_failure"
+startCommand = "sh -c 'python manage.py migrate --noinput && gunicorn tahiti_business.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120'"
+restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
