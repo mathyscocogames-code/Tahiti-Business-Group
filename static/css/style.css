@@ -284,6 +284,71 @@ textarea.form-input       { resize: vertical; min-height: 100px; }
 .billboard-empty__price { font-size: 22px; font-weight: 900; color: var(--primary); }
 .billboard-empty__cta   { font-size: 12px; font-weight: 600; color: var(--primary); text-decoration: underline; }
 
+/* ── Rectangle publicitaire fixe pleine largeur ─────────────────── */
+.pub-bg-fixed {
+  position: fixed;
+  top: 108px;   /* juste sous le header sticky (zone1 64px + zone2 44px) */
+  left: 0;
+  width: 100vw;
+  height: 280px; /* hauteur rectangle billboard desktop */
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  box-shadow: 0 6px 32px rgba(0,0,0,.22);
+}
+.pub-bg-fixed-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  pointer-events: auto;
+}
+.pub-bg-fixed-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.pub-bg-fixed-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1a6cf1 60%, #0ea5e9 100%);
+  text-decoration: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Espaceur = hauteur du rectangle pub (contenu démarre juste en dessous) */
+.pub-spacer {
+  height: 280px;
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Responsive billboard */
+@media (max-width: 767px) {
+  .pub-bg-fixed { height: 200px; }
+  .pub-spacer   { height: 200px; }
+}
+@media (max-width: 479px) {
+  .pub-bg-fixed { height: 140px; }
+  .pub-spacer   { height: 140px; }
+}
+
+/* Couche contenu par-dessus l'image fixe — transparent pour voir l'image */
+main {
+  position: relative;
+  z-index: 2;
+  background: transparent;
+}
+
 /* ── Category nav – Zone 2 ────────────────────────────────────── */
 .cat-nav {
   display: flex;

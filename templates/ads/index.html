@@ -2,25 +2,9 @@
 {% load static %}
 {% block title %}Accueil{% endblock %}
 
+{% block pub_spacer %}<div class="pub-spacer"></div>{% endblock %}
+
 {% block content %}
-
-<!-- BILLBOARD -->
-<div class="max-w-7xl mx-auto px-4 pt-6 pb-2">
-  {% if pub_billboard %}
-  <a href="{{ pub_billboard.lien }}" target="_blank" rel="noopener sponsored" class="billboard-wrap">
-    <img src="{{ pub_billboard.get_image }}" alt="{{ pub_billboard.titre }}" class="billboard-img">
-  </a>
-  {% else %}
-  <a href="{% url 'tarifs_pubs' %}" class="billboard-empty">
-    <div class="billboard-empty__size">1200 × 400 px</div>
-    <div class="billboard-empty__title">Espace publicitaire</div>
-    <div class="billboard-empty__price">25 000 XPF / mois</div>
-    <div class="billboard-empty__cta">Réserver cet espace →</div>
-  </a>
-  {% endif %}
-</div>
-
-<!-- LAYOUT PRINCIPAL + SIDEBAR -->
 <div class="max-w-7xl mx-auto px-4 pb-16 pt-6">
   <div class="layout-with-sidebar">
 

@@ -10,7 +10,7 @@ SECRET_KEY = os.environ.get(
     'django-tahiti-business-2026-super-secret-key-production'
 )
 
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
