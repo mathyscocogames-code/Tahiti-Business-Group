@@ -285,12 +285,13 @@ const SPECS_DEF = {
     { name: 'etat',        label: 'État',          type: 'select', options: ['Neuf','Très bon','Bon','Passable'] },
   ],
   'elec-pc': [
-    { name: 'ram_gb',      label: 'RAM (Go)',      type: 'select', options: ['8','16','32','64'] },
-    { name: 'stockage_gb', label: 'Stockage (Go)', type: 'select', options: ['256','512','1 000','2 000','4 000'] },
-    { name: 'processeur',  label: 'Processeur',    type: 'text',   placeholder: 'Ex: Ryzen 5 5600X' },
-    { name: 'gpu',         label: 'Carte graphique', type: 'text', placeholder: 'Ex: RTX 4060, RX 7600' },
-    { name: 'os',          label: 'Système',       type: 'select', options: ['Windows 11','Windows 10','Linux','Sans OS'] },
-    { name: 'etat',        label: 'État',          type: 'select', options: ['Neuf','Très bon','Bon','Passable'] },
+    { name: 'usage',         label: 'Usage principal', type: 'select', options: ['Gaming','Pro / Workstation','Bureautique','Serveur','Polyvalent'] },
+    { name: 'ram_gb',        label: 'RAM (Go)',         type: 'select', options: ['8','16','32','64','128'] },
+    { name: 'stockage_gb',   label: 'Stockage (Go)',    type: 'select', options: ['256','512','1 000','2 000','4 000'] },
+    { name: 'processeur',    label: 'Processeur',       type: 'text',   placeholder: 'Ex: Ryzen 5 5600X' },
+    { name: 'gpu',           label: 'Carte graphique',  type: 'text',   placeholder: 'Ex: RTX 4060, RX 7600' },
+    { name: 'refroidissement',label: 'Refroidissement', type: 'select', options: ['Air (ventirad)','Watercooling AIO','Watercooling custom','Passif'] },
+    { name: 'etat',          label: 'État',             type: 'select', options: ['Neuf','Très bon','Bon','Passable'] },
   ],
   'elec-tv': [
     { name: 'marque',        label: 'Marque',         type: 'text',   placeholder: 'Ex: Samsung, LG, Sony…' },
@@ -313,10 +314,11 @@ const SPECS_DEF = {
 
   // SERVICES
   'services-travaux': [
-    { name: 'type_travaux',  label: 'Type de travaux',  type: 'select', options: ['Maçonnerie','Peinture','Électricité','Plomberie','Carrelage','Toiture','Autre'] },
-    { name: 'devis_gratuit', label: 'Devis gratuit',     type: 'checkbox' },
-    { name: 'materiel',      label: 'Matériel fourni',   type: 'checkbox' },
+    { name: 'type_travaux',  label: 'Type de travaux',   type: 'select', options: ['Maçonnerie','Peinture','Électricité','Plomberie','Carrelage','Toiture','Autre'] },
     { name: 'deplacement',   label: 'Zone de déplacement', type: 'text', placeholder: 'Ex: Papeete + 20 km' },
+    { name: 'devis_gratuit', label: 'Devis gratuit',      type: 'checkbox' },
+    { name: 'materiel',      label: 'Matériel fourni',    type: 'checkbox' },
+    { name: 'tva',           label: 'Assujetti TVA',      type: 'checkbox' },
   ],
   'services-cours': [
     { name: 'matiere',     label: 'Matière / discipline', type: 'text',   placeholder: 'Ex: Maths, Anglais, Guitare…' },
@@ -364,21 +366,37 @@ const SPECS_DEF = {
   ],
 };
 
-// ─── Emploi : champs communs à toutes les sous-catégories ────────────────────
-function _emploiFields(extra) {
-  const base = [
-    { name: 'type_contrat',   label: 'Type de contrat',         type: 'select', options: ['CDI','CDD','Intérim','Stage','Alternance','Freelance'] },
-    { name: 'heures_semaine', label: 'Heures / semaine',         type: 'number', placeholder: 'Ex: 39' },
-    { name: 'experience_ans', label: 'Expérience requise (ans)', type: 'number', placeholder: 'Ex: 2' },
-    { name: 'permis_b',       label: 'Permis B requis',          type: 'checkbox' },
-  ];
-  return extra ? base.concat(extra) : base;
-}
-SPECS_DEF['emploi-commerciaux']  = _emploiFields([{ name: 'deplacements', label: 'Déplacements fréquents', type: 'checkbox' }]);
-SPECS_DEF['emploi-informatique'] = _emploiFields([{ name: 'langages', label: 'Langages / stack', type: 'text', placeholder: 'Ex: Python, React, Django' }]);
-SPECS_DEF['emploi-hotellerie']   = _emploiFields([{ name: 'langues', label: 'Langues requises', type: 'text', placeholder: 'Ex: Français, Anglais' }]);
-SPECS_DEF['emploi-btp']          = _emploiFields([{ name: 'type_chantier', label: 'Type chantier', type: 'text', placeholder: 'Ex: Résidentiel, Génie civil' }]);
-SPECS_DEF['emploi-services']     = _emploiFields([{ name: 'diplome_requis', label: 'Diplôme requis', type: 'text', placeholder: 'Ex: BTS, CAP…' }]);
+// ─── Emploi : champs spécifiques par sous-catégorie ──────────────────────────
+SPECS_DEF['emploi-commerciaux'] = [
+  { name: 'type_contrat',    label: 'Type de contrat',   type: 'select', options: ['CDI','CDD','Intérim','Stage','Alternance','Freelance'] },
+  { name: 'salaire_fixe',    label: 'Salaire fixe (XPF)',  type: 'number', placeholder: 'Ex: 180 000' },
+  { name: 'salaire_variable',label: 'Variable / commissions', type: 'number', placeholder: 'Ex: 50 000' },
+  { name: 'deplacements',    label: 'Déplacements fréquents', type: 'checkbox' },
+];
+SPECS_DEF['emploi-informatique'] = [
+  { name: 'type_contrat',  label: 'Type de contrat',  type: 'select', options: ['CDI','CDD','Freelance','Stage','Alternance'] },
+  { name: 'langages',      label: 'Langages requis',  type: 'text',   placeholder: 'Ex: Python, JavaScript, Java' },
+  { name: 'stack',         label: 'Stack / framework',type: 'text',   placeholder: 'Ex: React, Django, Laravel' },
+  { name: 'remote_ok',     label: 'Télétravail possible', type: 'checkbox' },
+];
+SPECS_DEF['emploi-hotellerie'] = [
+  { name: 'type_contrat',  label: 'Type de contrat',    type: 'select', options: ['CDI','CDD','Saisonnier','Intérim'] },
+  { name: 'horaires',      label: 'Horaires',            type: 'select', options: ['Journée','Matin','Soir','Nuit','Rotation 3x8','Week-end'] },
+  { name: 'experience_ans',label: 'Expérience requise',  type: 'number', placeholder: 'Ex: 2' },
+  { name: 'langues',       label: 'Langues requises',    type: 'text',   placeholder: 'Ex: Français, Anglais' },
+];
+SPECS_DEF['emploi-btp'] = [
+  { name: 'type_contrat',  label: 'Type de contrat',    type: 'select', options: ['CDI','CDD','Intérim','Sous-traitance'] },
+  { name: 'type_chantier', label: 'Type de chantier',   type: 'text',   placeholder: 'Ex: Résidentiel, Génie civil' },
+  { name: 'salaire_jour',  label: 'Salaire / jour (XPF)', type: 'number', placeholder: 'Ex: 15 000' },
+  { name: 'debut',         label: 'Début souhaité',      type: 'text',   placeholder: 'Ex: Immédiat, Mars 2025' },
+];
+SPECS_DEF['emploi-services'] = [
+  { name: 'type_contrat',  label: 'Type de contrat',    type: 'select', options: ['CDI','CDD','Intérim','Stage'] },
+  { name: 'diplome_requis',label: 'Diplôme requis',      type: 'text',   placeholder: 'Ex: CAP, BTS, Licence…' },
+  { name: 'references',    label: 'Références exigées',  type: 'checkbox' },
+  { name: 'domicile',      label: 'Travail à domicile',  type: 'checkbox' },
+];
 
 // ─── Rendu des champs adaptatifs ──────────────────────────────────────────────
 function renderSpecs(souscat) {
