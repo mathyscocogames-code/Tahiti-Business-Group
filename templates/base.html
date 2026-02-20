@@ -367,7 +367,7 @@
 
 <!-- ═══ PUB ARRIÈRE-PLAN FIXE PLEINE PAGE (index + liste uniquement) ═══ -->
 {% with url=request.resolver_match.url_name %}
-{% if url != 'deposer_annonce' and url != 'mes_favoris' and url != 'mes_messages' and url != 'mon_compte' and url != 'edit_annonce' and url != 'login' and url != 'register' %}
+{% if url != 'deposer_annonce' and url != 'mes_favoris' and url != 'mes_messages' and url != 'mon_compte' and url != 'edit_annonce' and url != 'login' and url != 'register' and url != 'page_info' and url != 'page_business' and url != 'rubriques_index' %}
 <div class="pub-bg-fixed">
   {% if pub_billboard %}
   <a href="{{ pub_billboard.lien }}" target="_blank" rel="noopener sponsored" class="pub-bg-fixed-link">
