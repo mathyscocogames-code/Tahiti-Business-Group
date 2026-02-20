@@ -60,9 +60,9 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="prix-row">
               <div>
-                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Prix (XPF)</label>
+                <label id="prix-label" class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Prix (XPF)</label>
                 {{ form.prix }}
-                <p class="text-xs text-gray-400 mt-1">Laissez 0 pour "Gratuit"</p>
+                <p class="text-xs text-gray-400 mt-1" id="prix-hint">Laissez 0 pour "Gratuit"</p>
               </div>
               <div>
                 <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Affichage prix</label>
@@ -148,21 +148,34 @@ function togglePrix(cat) {
 function adaptPrix(cat, sousCat) {
   const row = document.getElementById('prix-row');
   if (!row) return;
-  const lbl = row.querySelector('label');
-  const inp = row.querySelector('input');
-  if (cat === 'emploi') {
-    row.style.display = 'none';
-    return;
-  }
+  const lbl  = document.getElementById('prix-label');
+  const hint = document.getElementById('prix-hint');
+  const inp  = row.querySelector('input');
   row.style.display = '';
-  if (cat === 'immobilier') {
-    const isLoc = ['immo-appartements','immo-maisons','immo-bureaux'].includes(sousCat);
+  if (cat === 'emploi') {
+    if (lbl)  lbl.textContent  = 'Salaire brut (XPF / mois)';
+    if (inp)  inp.placeholder  = 'Ex: 200 000';
+    if (hint) hint.textContent = 'Laissez 0 si salaire à négocier';
+  } else if (cat === 'vehicules') {
+    if (lbl)  lbl.textContent  = 'Tarif (XPF)';
+    if (inp)  inp.placeholder  = 'Ex: 1 800 000';
+    if (hint) hint.textContent = 'Laissez 0 pour "Prix à négocier"';
+  } else if (cat === 'immobilier') {
+    const isLoc    = ['immo-appartements','immo-maisons','immo-bureaux'].includes(sousCat);
     const isSaison = sousCat === 'immo-saisonnieres';
-    if (lbl) lbl.textContent = isSaison ? 'Tarif de base (XPF)' : (isLoc ? 'Loyer / mois (XPF)' : 'Prix de vente (XPF)');
-    if (inp) inp.placeholder = isSaison ? '150 000' : (isLoc ? '80 000' : '25 000 000');
+    const isPark   = sousCat === 'immo-parkings';
+    const isTerrain = sousCat === 'immo-terrains';
+    if (lbl)  lbl.textContent  = isSaison ? 'Tarif de base (XPF)' : (isLoc || isPark ? 'Loyer / mois (XPF)' : 'Prix de vente (XPF)');
+    if (inp)  inp.placeholder  = isSaison ? '150 000' : isLoc ? '80 000' : isPark ? '15 000' : isTerrain ? '5 000 000' : '25 000 000';
+    if (hint) hint.textContent = isLoc || isPark || isSaison ? 'Loyer mensuel hors charges' : 'Prix de vente total';
+  } else if (cat === 'services') {
+    if (lbl)  lbl.textContent  = 'Tarif de base (XPF)';
+    if (inp)  inp.placeholder  = 'Ex: 5 000';
+    if (hint) hint.textContent = 'Laissez 0 pour "Devis sur demande"';
   } else {
-    if (lbl) lbl.textContent = 'Prix (XPF)';
-    if (inp) inp.placeholder = '';
+    if (lbl)  lbl.textContent  = 'Prix (XPF)';
+    if (inp)  inp.placeholder  = '';
+    if (hint) hint.textContent = 'Laissez 0 pour "Gratuit"';
   }
 }
 
@@ -354,11 +367,10 @@ const SPECS_DEF = {
 // ─── Emploi : champs communs à toutes les sous-catégories ────────────────────
 function _emploiFields(extra) {
   const base = [
-    { name: 'type_contrat',   label: 'Type de contrat',       type: 'select', options: ['CDI','CDD','Intérim','Stage','Alternance','Freelance'] },
-    { name: 'salaire_xpf',    label: 'Salaire brut (XPF/mois)', type: 'number', placeholder: 'Ex: 200 000' },
-    { name: 'heures_semaine', label: 'Heures / semaine',       type: 'number', placeholder: 'Ex: 39' },
+    { name: 'type_contrat',   label: 'Type de contrat',         type: 'select', options: ['CDI','CDD','Intérim','Stage','Alternance','Freelance'] },
+    { name: 'heures_semaine', label: 'Heures / semaine',         type: 'number', placeholder: 'Ex: 39' },
     { name: 'experience_ans', label: 'Expérience requise (ans)', type: 'number', placeholder: 'Ex: 2' },
-    { name: 'permis_b',       label: 'Permis B requis',        type: 'checkbox' },
+    { name: 'permis_b',       label: 'Permis B requis',          type: 'checkbox' },
   ];
   return extra ? base.concat(extra) : base;
 }
