@@ -1,0 +1,133 @@
+<!-- SIDEBAR PUBLICITÉS -->
+<aside class="layout-sidebar">
+  <div class="space-y-4">
+
+    <!-- SLOT HAUT — 15 000 XPF/mois -->
+    <div class="pub-slot {% if pub_haut %}filled{% endif %} overflow-hidden">
+      <div class="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-gray-50">
+        <span class="text-xs font-medium text-gray-400 uppercase tracking-wide">Publicité</span>
+        <a href="{% url 'tarifs_pubs' %}" class="text-xs text-blue-500 hover:text-blue-700 font-medium transition">Réserver</a>
+      </div>
+      {% if pub_haut %}
+        {% if pub_haut.lien %}<a href="{{ pub_haut.lien }}" target="_blank" rel="noopener" class="block">{% endif %}
+        {% if pub_haut.get_image %}
+          <img src="{{ pub_haut.get_image }}" alt="{{ pub_haut.titre }}" class="w-full h-40 object-cover">
+        {% else %}
+          <div class="h-40 bg-gradient-to-br from-blue-50 to-indigo-50 flex flex-col items-center justify-center text-center p-4">
+            <div class="font-bold text-gray-800">{{ pub_haut.titre }}</div>
+            {% if pub_haut.description %}<div class="text-xs text-gray-500 mt-1">{{ pub_haut.description }}</div>{% endif %}
+          </div>
+        {% endif %}
+        <div class="p-3 bg-white">
+          <div class="font-semibold text-sm text-gray-900">{{ pub_haut.titre }}</div>
+          {% if pub_haut.description %}<div class="text-xs text-gray-500 mt-0.5">{{ pub_haut.description }}</div>{% endif %}
+        </div>
+        {% if pub_haut.lien %}</a>{% endif %}
+      {% else %}
+      <div class="pub-empty">
+        <div class="pub-empty__icon">📢</div>
+        <div class="pub-empty__title">Votre pub ici</div>
+        <div class="pub-empty__price">10 000 XPF</div>
+        <div class="pub-empty__sub">Emplacement premium · /mois</div>
+        <a href="{% url 'demande_pub' %}" class="pub-empty__cta">Réserver maintenant</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Contact rapide -->
+    <div class="bg-white border border-gray-200 rounded-2xl p-4 text-center shadow-sm">
+      <div class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Contact</div>
+      <a href="tel:0689610613" class="text-xl font-black text-gray-900 hover:text-blue-600 transition block mb-1">
+        89 61 06 13
+      </a>
+      <a href="mailto:cocogamestahiti@gmail.com" class="text-xs text-gray-400 hover:text-blue-500 transition truncate block">
+        cocogamestahiti@gmail.com
+      </a>
+    </div>
+
+    <!-- SLOT MILIEU — 10 000 XPF/mois -->
+    <div class="pub-slot {% if pub_milieu %}filled{% endif %} overflow-hidden">
+      <div class="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-gray-50">
+        <span class="text-xs font-medium text-gray-400 uppercase tracking-wide">Publicité</span>
+        <a href="{% url 'tarifs_pubs' %}" class="text-xs text-blue-500 hover:text-blue-700 font-medium transition">Réserver</a>
+      </div>
+      {% if pub_milieu %}
+        {% if pub_milieu.lien %}<a href="{{ pub_milieu.lien }}" target="_blank" rel="noopener" class="block">{% endif %}
+        {% if pub_milieu.get_image %}
+          <img src="{{ pub_milieu.get_image }}" alt="{{ pub_milieu.titre }}" class="w-full h-36 object-cover">
+        {% else %}
+          <div class="h-36 bg-gradient-to-br from-amber-50 to-yellow-50 flex flex-col items-center justify-center text-center p-4">
+            <div class="font-bold text-gray-800">{{ pub_milieu.titre }}</div>
+            {% if pub_milieu.description %}<div class="text-xs text-gray-500 mt-1">{{ pub_milieu.description }}</div>{% endif %}
+          </div>
+        {% endif %}
+        <div class="p-3 bg-white"><div class="font-semibold text-sm text-gray-900">{{ pub_milieu.titre }}</div></div>
+        {% if pub_milieu.lien %}</a>{% endif %}
+      {% else %}
+      <div class="pub-empty" style="min-height:140px">
+        <div class="pub-empty__icon">🎯</div>
+        <div class="pub-empty__title">Votre pub ici</div>
+        <div class="pub-empty__price">7 000 XPF</div>
+        <div class="pub-empty__sub">Position centrale · /mois</div>
+        <a href="{% url 'demande_pub' %}" class="pub-empty__cta">Réserver</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- CTA déposer annonce -->
+    <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-5 text-center text-white shadow-sm">
+      <div class="text-2xl mb-2">🆓</div>
+      <div class="font-bold mb-1">Annonce gratuite</div>
+      <div class="text-blue-200 text-xs mb-3">Visible dans toute la Polynésie</div>
+      <a href="{% url 'deposer_annonce' %}" class="block bg-white text-blue-600 font-bold py-2 rounded-xl text-sm hover:bg-blue-50 transition">
+        Déposer maintenant
+      </a>
+    </div>
+
+    <!-- SLOT BAS — 5 000 XPF/mois -->
+    <div class="pub-slot {% if pub_bas %}filled{% endif %} overflow-hidden">
+      <div class="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-gray-50">
+        <span class="text-xs font-medium text-gray-400 uppercase tracking-wide">Publicité</span>
+        <a href="{% url 'tarifs_pubs' %}" class="text-xs text-blue-500 hover:text-blue-700 font-medium transition">Réserver</a>
+      </div>
+      {% if pub_bas %}
+        {% if pub_bas.lien %}<a href="{{ pub_bas.lien }}" target="_blank" rel="noopener" class="block">{% endif %}
+        {% if pub_bas.get_image %}
+          <img src="{{ pub_bas.get_image }}" alt="{{ pub_bas.titre }}" class="w-full h-32 object-cover">
+        {% else %}
+          <div class="h-32 bg-gradient-to-br from-emerald-50 to-green-50 flex flex-col items-center justify-center text-center p-4">
+            <div class="font-bold text-gray-800">{{ pub_bas.titre }}</div>
+          </div>
+        {% endif %}
+        <div class="p-3 bg-white"><div class="font-semibold text-sm text-gray-900">{{ pub_bas.titre }}</div></div>
+        {% if pub_bas.lien %}</a>{% endif %}
+      {% else %}
+      <div class="pub-empty" style="min-height:120px">
+        <div class="pub-empty__icon">💼</div>
+        <div class="pub-empty__title">Votre pub ici</div>
+        <div class="pub-empty__price">5 000 XPF</div>
+        <div class="pub-empty__sub">Tarif accessible · /mois</div>
+        <a href="{% url 'demande_pub' %}" class="pub-empty__cta">Réserver</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Catégories rapides -->
+    <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+      <div class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Catégories</div>
+      <div class="space-y-1">
+        {% for code, label in categories %}
+        <a href="{% url 'liste_annonces' %}?categorie={{ code }}"
+          class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 text-sm text-gray-700 hover:text-blue-600 transition group">
+          <span>
+            {% if code == 'vehicules' %}🚗{% elif code == 'immobilier' %}🏠{% elif code == 'electronique' %}📱{% elif code == 'emploi' %}💼{% elif code == 'services' %}🔧{% else %}📦{% endif %}
+            {{ label }}
+          </span>
+          <svg class="w-3.5 h-3.5 text-gray-300 group-hover:text-blue-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</aside>

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Signaler — {{ annonce.titre }}{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-10">
+  <a href="{% url 'annonce_detail' annonce.pk %}" class="text-sm text-gray-500 hover:text-gray-900 underline">
+    ← Retour à l'annonce
+  </a>
+  <h1 class="text-2xl font-bold text-gray-900 mt-4 mb-2">🚨 Signaler une annonce</h1>
+  <p class="text-gray-500 text-sm mb-6">
+    Annonce : <strong class="text-gray-900">{{ annonce.titre }}</strong>
+  </p>
+
+  <form method="post" class="bg-white border-2 border-gray-900 p-6 space-y-5">
+    {% csrf_token %}
+    <div>
+      <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">
+        Raison du signalement <span class="text-red-500">*</span>
+      </label>
+      <div class="space-y-2">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="radio" name="raison" value="spam" required class="w-4 h-4 accent-gray-900">
+          <span class="text-sm text-gray-700">Spam / Annonce en double</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="radio" name="raison" value="arnaque" class="w-4 h-4 accent-gray-900">
+          <span class="text-sm text-gray-700">Arnaque / Fraude</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="radio" name="raison" value="illegal" class="w-4 h-4 accent-gray-900">
+          <span class="text-sm text-gray-700">Contenu illégal ou choquant</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="radio" name="raison" value="autre" class="w-4 h-4 accent-gray-900">
+          <span class="text-sm text-gray-700">Autre</span>
+        </label>
+      </div>
+    </div>
+    <div>
+      <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5">
+        Détails (optionnel)
+      </label>
+      <textarea name="details" maxlength="500" rows="3"
+                placeholder="Expliquez brièvement le problème..."
+                class="w-full border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:border-gray-900 resize-none"></textarea>
+    </div>
+    <button type="submit"
+            class="w-full bg-gray-900 text-white font-bold py-3 hover:bg-black transition text-sm">
+      🚨 Envoyer le signalement
+    </button>
+  </form>
+</div>
+{% endblock %}

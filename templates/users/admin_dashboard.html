@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-2xl font-bold">Dashboard Admin</h1>
+      <p class="text-muted text-sm mt-1">Tahiti Business Group — Modération & Gestion</p>
+    </div>
+    <a href="/admin/" class="bg-border hover:bg-border/80 text-white px-4 py-2 rounded-lg text-sm transition">
+      Django Admin →
+    </a>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+    <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold">{{ stats.annonces_total }}</div>
+      <div class="text-xs text-muted mt-1">Annonces total</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-accent">{{ stats.annonces_actives }}</div>
+      <div class="text-xs text-muted mt-1">Actives</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-yellow-400">{{ stats.annonces_moderees }}</div>
+      <div class="text-xs text-muted mt-1">Modérées</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-primary">{{ stats.users_total }}</div>
+      <div class="text-xs text-muted mt-1">Utilisateurs</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-green-400">{{ stats.pubs_actives }}</div>
+      <div class="text-xs text-muted mt-1">Pubs actives</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-4 text-center border-yellow-700/50">
+      <div class="text-2xl font-bold text-yellow-400">{{ stats.demandes_pubs }}</div>
+      <div class="text-xs text-muted mt-1">Demandes pubs</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Annonces récentes -->
+    <div class="lg:col-span-2">
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-lg">Annonces récentes</h2>
+          <a href="/admin/ads/annonce/" class="text-xs text-primary hover:text-accent">Gérer tout →</a>
+        </div>
+        <div class="space-y-2">
+          {% for annonce in annonces_recentes %}
+          <div class="flex items-center gap-3 p-3 bg-dark rounded-xl">
+            <div class="flex-1 min-w-0">
+              <a href="{% url 'annonce_detail' annonce.pk %}" class="text-sm font-medium hover:text-accent transition truncate block">
+                {{ annonce.titre }}
+              </a>
+              <div class="text-xs text-muted">
+                {{ annonce.user.email }} • {{ annonce.get_categorie_display }} • {{ annonce.created_at|date:"d/m H:i" }}
+              </div>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0
+              {% if annonce.statut == 'actif' %}bg-green-900/50 text-green-400
+              {% elif annonce.statut == 'modere' %}bg-yellow-900/50 text-yellow-400
+              {% else %}bg-gray-800 text-gray-400{% endif %}">
+              {{ annonce.get_statut_display }}
+            </span>
+            <div class="flex gap-1 flex-shrink-0">
+              {% if annonce.statut != 'actif' %}
+              <form method="post" action="{% url 'moderer_annonce' annonce.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approuver">
+                <button type="submit" class="text-xs px-2 py-1 bg-green-900/30 text-green-400 hover:bg-green-900/50 rounded transition">✓</button>
+              </form>
+              {% endif %}
+              {% if annonce.statut == 'actif' %}
+              <form method="post" action="{% url 'moderer_annonce' annonce.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="moderer">
+                <button type="submit" class="text-xs px-2 py-1 bg-yellow-900/30 text-yellow-400 hover:bg-yellow-900/50 rounded transition">⚠</button>
+              </form>
+              {% endif %}
+              <form method="post" action="{% url 'moderer_annonce' annonce.pk %}" onsubmit="return confirm('Supprimer ?')">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="supprimer">
+                <button type="submit" class="text-xs px-2 py-1 bg-red-900/30 text-red-400 hover:bg-red-900/50 rounded transition">✕</button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar: Pubs + Demandes -->
+    <div class="space-y-6">
+
+      <!-- Pubs actives -->
+      <div class="bg-card border border-border rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold">Publicités</h2>
+          <a href="/admin/pubs/publicite/add/" class="text-xs bg-accent text-dark font-bold px-2.5 py-1 rounded-lg hover:bg-green-400 transition">+ Créer</a>
+        </div>
+        {% for pub in pubs %}
+        <div class="flex items-center gap-2 p-2 bg-dark rounded-lg mb-2">
+          <div class="w-2 h-2 rounded-full flex-shrink-0 {% if pub.actif %}bg-green-400{% else %}bg-gray-600{% endif %}"></div>
+          <div class="flex-1 min-w-0">
+            <div class="text-xs font-medium truncate">{{ pub.titre }}</div>
+            <div class="text-xs text-muted">{{ pub.get_emplacement_display }}</div>
+          </div>
+          <a href="/admin/pubs/publicite/{{ pub.pk }}/change/" class="text-xs text-primary hover:text-accent">Éditer</a>
+        </div>
+        {% empty %}
+        <div class="text-center py-4 text-muted text-sm">
+          Aucune publicité.<br>
+          <a href="/admin/pubs/publicite/add/" class="text-accent hover:underline">Créer la première</a>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Demandes pubs -->
+      {% if demandes_pubs %}
+      <div class="bg-card border border-yellow-700/40 rounded-2xl p-5">
+        <h2 class="font-bold mb-3 text-yellow-400">⚠ Demandes de pub ({{ demandes_pubs|length }})</h2>
+        {% for d in demandes_pubs %}
+        <div class="p-2 bg-dark rounded-lg mb-2">
+          <div class="text-xs font-medium">{{ d.nom }} — {{ d.entreprise }}</div>
+          <div class="text-xs text-muted">{{ d.email }} • {{ d.get_emplacement_souhaite_display }}</div>
+          <div class="text-xs text-muted">{{ d.created_at|date:"d/m H:i" }}</div>
+        </div>
+        {% endfor %}
+        <a href="/admin/pubs/demandepublicite/" class="text-xs text-primary hover:text-accent block mt-2">
+          Gérer toutes les demandes →
+        </a>
+      </div>
+      {% endif %}
+
+      <!-- Actions rapides -->
+      <div class="bg-card border border-border rounded-2xl p-5">
+        <h2 class="font-bold mb-3">Actions rapides</h2>
+        <div class="space-y-2">
+          <a href="/admin/ads/annonce/" class="flex items-center gap-2 p-2.5 bg-dark hover:bg-border rounded-lg transition text-sm">
+            📋 Gérer les annonces
+          </a>
+          <a href="/admin/users/user/" class="flex items-center gap-2 p-2.5 bg-dark hover:bg-border rounded-lg transition text-sm">
+            👥 Gérer les utilisateurs
+          </a>
+          <a href="/admin/pubs/publicite/add/" class="flex items-center gap-2 p-2.5 bg-dark hover:bg-border rounded-lg transition text-sm">
+            📢 Créer une publicité
+          </a>
+          <a href="{% url 'tarifs_pubs' %}" class="flex items-center gap-2 p-2.5 bg-dark hover:bg-border rounded-lg transition text-sm">
+            💰 Voir tarifs pubs
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

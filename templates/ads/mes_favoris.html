@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Mes Favoris — TBG{% endblock %}
+{% block og_title %}Mes annonces favorites — TBG{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+      ❤️ Mes Favoris
+    </h1>
+    <a href="{% url 'liste_annonces' %}" class="text-sm text-gray-500 hover:text-gray-900 underline">
+      ← Voir toutes les annonces
+    </a>
+  </div>
+
+  {% if annonces %}
+  <div class="ads-grid" id="fav-grid">
+    {% for annonce in annonces %}
+    {% include 'partials/_annonce_card.html' %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div id="fav-empty" class="text-center py-20">
+    <div class="text-7xl mb-4">💔</div>
+    <h2 class="text-xl font-bold text-gray-900 mb-2">Aucun favori sauvegardé</h2>
+    <p class="text-gray-500 mb-6 text-sm">
+      Cliquez sur ❤️ sur une annonce pour l'ajouter à vos favoris.<br>
+      Vos favoris sont sauvegardés localement sur cet appareil.
+    </p>
+    <a href="{% url 'liste_annonces' %}"
+       class="bg-gray-900 text-white font-bold px-6 py-3 hover:bg-black transition text-sm">
+      Parcourir les annonces
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+// If no ids param in URL, read localStorage and redirect
+(function(){
+  const params = new URLSearchParams(location.search);
+  if (!params.get('ids')) {
+    const ids = JSON.parse(localStorage.getItem('tbg_favoris') || '[]');
+    if (ids.length > 0) {
+      location.replace('?ids=' + ids.join(','));
+    }
+  }
+})();
+</script>
+{% endblock %}

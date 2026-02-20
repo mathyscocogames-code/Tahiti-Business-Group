@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% load ads_extras %}
+{% block title %}{{ annonce.titre }}{% endblock %}
+{% block meta_desc %}{{ annonce.description|truncatewords:20 }}{% endblock %}
+
+{% block og_title %}{{ annonce.titre }} — TBG{% endblock %}
+{% block og_desc %}{{ annonce.description|truncatewords:25 }}{% endblock %}
+{% block og_image %}{% if annonce.photos %}{{ annonce.photos.0 }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <!-- Breadcrumb -->
+  <nav class="text-xs text-gray-400 mb-6 flex items-center gap-2 font-medium">
+    <a href="{% url 'index' %}" class="hover:text-blue-600 transition">Accueil</a>
+    <span>›</span>
+    <a href="{% url 'liste_annonces' %}?categorie={{ annonce.categorie }}" class="hover:text-blue-600 transition">{{ annonce.get_categorie_display }}</a>
+    <span>›</span>
+    <span class="text-gray-700 truncate max-w-48">{{ annonce.titre }}</span>
+  </nav>
+
+  <div class="layout-with-sidebar">
+
+    <!-- CONTENU -->
+    <div class="layout-main space-y-4">
+
+      <!-- Photos -->
+      {% if annonce.photos %}
+      <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div class="p-4">
+          <img id="mainPhoto" src="{{ annonce.photos.0 }}" alt="{{ annonce.titre }}" class="photo-main rounded-xl">
+        </div>
+        {% if annonce.photos|length > 1 %}
+        <div class="flex gap-2 px-4 pb-4 overflow-x-auto">
+          {% for photo in annonce.photos %}
+          <img src="{{ photo }}" alt="Photo {{ forloop.counter }}" class="photo-thumb {% if forloop.first %}active{% endif %}"
+            onclick="switchPhoto(this, '{{ photo }}')">
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="bg-white border border-gray-200 rounded-2xl h-64 flex items-center justify-center text-7xl shadow-sm">
+        {% if annonce.categorie == 'vehicules' %}🚗{% elif annonce.categorie == 'immobilier' %}🏠{% elif annonce.categorie == 'electronique' %}📱{% elif annonce.categorie == 'emploi' %}💼{% elif annonce.categorie == 'services' %}🔧{% else %}📦{% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Titre & Prix -->
+      <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <div class="flex items-start justify-between gap-4 mb-3">
+          <h1 class="text-2xl font-black text-gray-900 leading-tight">{{ annonce.titre }}</h1>
+          {% if annonce.boost %}<span class="badge badge-pro flex-shrink-0">⭐ Boost</span>{% endif %}
+        </div>
+        <div class="text-3xl font-black text-blue-600 mb-5">{{ annonce.get_prix_display_label }}</div>
+        <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500">
+          <span class="flex items-center gap-1.5">🏷️ {{ annonce.get_categorie_display }}</span>
+          <span class="flex items-center gap-1.5">📍 {{ annonce.localisation }}</span>
+          <span class="flex items-center gap-1.5">👁 {{ annonce.views }} vue{{ annonce.views|pluralize }}</span>
+          <span class="flex items-center gap-1.5">📅 {{ annonce.created_at|date:"d/m/Y" }}</span>
+        </div>
+
+        {% if annonce.specs %}
+        <div class="mt-4 pt-4 border-t border-gray-100">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Caractéristiques</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {% for key, val in annonce.specs.items %}
+            <div class="bg-gray-50 rounded-lg px-3 py-2">
+              <div class="text-xs text-gray-400 mb-0.5">{{ key|spec_label }}</div>
+              <div class="font-semibold text-gray-900 text-sm">{{ val }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Action bar: Favoris · Partager · Signaler -->
+      <div class="flex flex-wrap gap-2">
+        <!-- Favoris -->
+        <button class="fav-btn inline-flex items-center gap-1.5 border-2 border-gray-900 text-gray-900 text-xs font-bold px-4 py-2.5 hover:bg-gray-100 transition"
+                data-fav-pk="{{ annonce.pk }}"
+                aria-label="Ajouter aux favoris">
+          <span class="fav-icon">♡</span>
+          <span class="fav-label">Favoris</span>
+        </button>
+        <!-- Partager -->
+        <button onclick="shareAnnonce()" class="inline-flex items-center gap-1.5 border border-gray-300 text-gray-600 text-xs font-semibold px-4 py-2.5 hover:border-gray-900 hover:text-gray-900 transition">
+          🔗 Partager
+        </button>
+        <!-- WhatsApp share -->
+        <a href="https://wa.me/?text={{ annonce.titre|urlencode }}%20%E2%80%94%20{{ request.build_absolute_uri|urlencode }}"
+           target="_blank" rel="noopener"
+           class="inline-flex items-center gap-1.5 border border-gray-300 text-gray-600 text-xs font-semibold px-4 py-2.5 hover:border-gray-900 hover:text-gray-900 transition">
+          💬 WhatsApp
+        </a>
+        <!-- Signaler -->
+        <a href="{% url 'signaler_annonce' annonce.pk %}"
+           class="inline-flex items-center gap-1.5 border border-red-200 text-red-500 text-xs font-semibold px-4 py-2.5 hover:border-red-400 hover:text-red-700 transition ml-auto">
+          🚨 Signaler
+        </a>
+      </div>
+
+      <!-- Description -->
+
+      <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <h2 class="font-bold text-lg mb-3 text-gray-900">Description</h2>
+        <p class="text-gray-600 leading-relaxed whitespace-pre-wrap">{{ annonce.description }}</p>
+      </div>
+
+      <!-- Vendeur -->
+      <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <h2 class="font-bold text-lg mb-4 text-gray-900">Vendeur</h2>
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-2xl font-black text-white flex-shrink-0">
+            {{ annonce.user.nom|first|upper|default:annonce.user.email|first|upper }}
+          </div>
+          <div>
+            <div class="font-bold text-gray-900 text-lg">{{ annonce.user.nom|default:"Anonyme" }}</div>
+            <div class="text-sm text-gray-500">{{ annonce.user.get_role_display }}</div>
+            {% if annonce.user.tel %}
+            <div class="flex flex-wrap gap-2 mt-2">
+              <a href="tel:{{ annonce.user.tel }}"
+                 class="inline-flex items-center gap-1.5 bg-gray-900 text-white text-xs font-bold px-3 py-1.5 hover:bg-black transition">
+                📞 {{ annonce.user.tel }}
+              </a>
+              {% if annonce.user.whatsapp %}
+              <a href="https://wa.me/{{ annonce.user.whatsapp|urlencode }}"
+                 target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-1.5 bg-green-600 text-white text-xs font-bold px-3 py-1.5 hover:bg-green-700 transition">
+                💬 WhatsApp
+              </a>
+              {% else %}
+              <a href="https://wa.me/68989610613?text={{ annonce.titre|urlencode }}%20sur%20TBG"
+                 target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-1.5 bg-green-600 text-white text-xs font-bold px-3 py-1.5 hover:bg-green-700 transition">
+                💬 WhatsApp TBG
+              </a>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Contacter -->
+      {% if annonce.user != user %}
+      <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <h2 class="font-bold text-lg mb-5 text-gray-900">Envoyer un message au vendeur</h2>
+        <form method="post" class="space-y-4">
+          {% csrf_token %}
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">{{ form_message.contact_nom.label }}</label>
+              {{ form_message.contact_nom }}
+              {% if form_message.contact_nom.errors %}<p class="text-red-500 text-xs mt-1">{{ form_message.contact_nom.errors.0 }}</p>{% endif %}
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">{{ form_message.contact_email.label }}</label>
+              {{ form_message.contact_email }}
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">{{ form_message.contact_tel.label }}</label>
+              {{ form_message.contact_tel }}
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">{{ form_message.contenu.label }}</label>
+            {{ form_message.contenu }}
+            {% if form_message.contenu.errors %}<p class="text-red-500 text-xs mt-1">{{ form_message.contenu.errors.0 }}</p>{% endif %}
+          </div>
+          <button type="submit" class="btn btn-primary w-full justify-center py-3 text-base">
+            Envoyer le message
+          </button>
+        </form>
+      </div>
+      {% endif %}
+
+      <!-- Similaires -->
+      {% if annonces_similaires %}
+      <div>
+        <h2 class="text-lg font-bold mb-4 text-gray-900">Annonces similaires</h2>
+        <div class="ads-grid">
+          {% for annonce in annonces_similaires %}{% include 'partials/_annonce_card.html' %}{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- SIDEBAR -->
+    {% include 'partials/_sidebar_pubs.html' %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchPhoto(el, src) {
+  document.getElementById('mainPhoto').src = src;
+  document.querySelectorAll('.photo-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Partager via Web Share API ou copier le lien
+function shareAnnonce() {
+  const url  = location.href;
+  const text = document.querySelector('h1') ? document.querySelector('h1').textContent.trim() : document.title;
+  if (navigator.share) {
+    navigator.share({ title: text, url: url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast && showToast('Lien copié !', 'success');
+    }).catch(() => {
+      prompt('Copiez ce lien :', url);
+    });
+  }
+}
+
+// Favoris sur la page de détail
+document.addEventListener('DOMContentLoaded', function() {
+  const btn = document.querySelector('.fav-btn[data-fav-pk]');
+  if (!btn) return;
+  const pk = btn.dataset.favPk;
+  const icon  = btn.querySelector('.fav-icon');
+  const label = btn.querySelector('.fav-label');
+
+  function isFav() {
+    return (JSON.parse(localStorage.getItem('tbg_favoris') || '[]')).includes(pk);
+  }
+  function update() {
+    if (isFav()) {
+      icon.textContent  = '❤️';
+      label.textContent = 'Sauvegardé';
+      btn.style.background = '#111827';
+      btn.style.color = '#fff';
+    } else {
+      icon.textContent  = '♡';
+      label.textContent = 'Favoris';
+      btn.style.background = '';
+      btn.style.color = '';
+    }
+  }
+  update();
+  btn.addEventListener('click', function() {
+    const list = JSON.parse(localStorage.getItem('tbg_favoris') || '[]');
+    const idx = list.indexOf(pk);
+    if (idx >= 0) {
+      list.splice(idx, 1);
+      typeof showToast !== 'undefined' && showToast('Retiré des favoris', 'info');
+    } else {
+      list.push(pk);
+      typeof showToast !== 'undefined' && showToast('Ajouté aux favoris ❤️', 'success');
+    }
+    localStorage.setItem('tbg_favoris', JSON.stringify(list));
+    update();
+  });
+});
+</script>
+{% endblock %}

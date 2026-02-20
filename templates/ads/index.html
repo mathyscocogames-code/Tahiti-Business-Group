@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+
+<!-- BILLBOARD -->
+<div class="max-w-7xl mx-auto px-4 pt-6 pb-2">
+  {% if pub_billboard %}
+  <a href="{{ pub_billboard.lien }}" target="_blank" rel="noopener sponsored" class="billboard-wrap">
+    <img src="{{ pub_billboard.get_image }}" alt="{{ pub_billboard.titre }}" class="billboard-img">
+  </a>
+  {% else %}
+  <a href="{% url 'tarifs_pubs' %}" class="billboard-empty">
+    <div class="billboard-empty__size">1200 × 400 px</div>
+    <div class="billboard-empty__title">Espace publicitaire</div>
+    <div class="billboard-empty__price">25 000 XPF / mois</div>
+    <div class="billboard-empty__cta">Réserver cet espace →</div>
+  </a>
+  {% endif %}
+</div>
+
+<!-- LAYOUT PRINCIPAL + SIDEBAR -->
+<div class="max-w-7xl mx-auto px-4 pb-16 pt-6">
+  <div class="layout-with-sidebar">
+
+    <!-- CONTENU PRINCIPAL -->
+    <div class="layout-main">
+
+      <!-- ── RUBRIQUES (Promo / Info / Nouveauté) ── -->
+      {% if promos_home or infos_home or nouveautes_home %}
+      <div class="mb-10">
+        <div class="flex items-center justify-between mb-5 pb-3 border-b-2 border-gray-900">
+          <h2 class="text-xl font-bold text-gray-900" style="font-family:'Libre Baskerville',Georgia,serif">Rubriques TBG</h2>
+          <a href="{% url 'rubriques_index' %}" class="text-xs font-bold text-gray-900 underline underline-offset-2">Voir tout →</a>
+        </div>
+
+        {% if promos_home %}
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-xs font-bold text-gray-900 border border-gray-900 px-2 py-0.5" style="letter-spacing:.06em;text-transform:uppercase">Promo</span>
+            <span class="text-xs text-gray-400 font-medium">💰 Réductions pros</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {% for p in promos_home %}
+            <a href="{{ p.lien_promo|default:'#' }}"
+               {% if p.lien_promo %}target="_blank" rel="noopener"{% endif %}
+               class="article-card">
+              <div class="article-card__body">
+                <div class="article-card__title">{{ p.titre }}</div>
+                <div class="article-card__desc">{{ p.contenu }}</div>
+                <div class="article-card__meta">
+                  <span>{{ p.pro_user.nom|default:p.pro_user.email }}</span>
+                  {% if p.lien_promo %}<span class="article-card__cta">Voir →</span>{% endif %}
+                </div>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if infos_home %}
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-xs font-bold text-gray-900 border border-gray-900 px-2 py-0.5" style="letter-spacing:.06em;text-transform:uppercase">Info</span>
+            <span class="text-xs text-gray-400 font-medium">📰 Actualités locales</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {% for a in infos_home %}
+            <a href="{{ a.source_media|default:'#' }}"
+               {% if a.source_media %}target="_blank" rel="noopener"{% endif %}
+               class="article-card">
+              <div class="article-card__body">
+                <div class="article-card__title">{{ a.titre }}</div>
+                <div class="article-card__desc">{{ a.contenu }}</div>
+                <div class="article-card__meta">
+                  <span>{% if a.auteur %}{{ a.auteur.nom|default:a.auteur.email }}{% else %}TBG{% endif %}</span>
+                  {% if a.source_media %}<span class="article-card__cta">Source →</span>{% endif %}
+                </div>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if nouveautes_home %}
+        <div class="mb-2">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-xs font-bold text-gray-900 border border-gray-900 px-2 py-0.5" style="letter-spacing:.06em;text-transform:uppercase">Nouveauté</span>
+            <span class="text-xs text-gray-400 font-medium">🚀 Nouveaux business</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {% for n in nouveautes_home %}
+            <a href="{{ n.lien_redirection|default:'#' }}"
+               {% if n.lien_redirection %}target="_blank" rel="noopener"{% endif %}
+               class="article-card">
+              <div class="article-card__body">
+                <div class="article-card__title">{{ n.titre }}</div>
+                <div class="article-card__desc">{{ n.contenu }}</div>
+                <div class="article-card__meta">
+                  <span>{{ n.pro_user.nom|default:n.pro_user.email }}</span>
+                  {% if n.lien_redirection %}<span class="article-card__cta">En savoir + →</span>{% endif %}
+                </div>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+      {% endif %}
+      <!-- ── /RUBRIQUES ── -->
+
+      <!-- Annonces récentes -->
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-xl font-bold text-gray-900">Annonces récentes</h2>
+      </div>
+
+      {% if annonces_recentes %}
+      <div id="annonces-grid" class="ads-grid mb-6">
+        {% for annonce in annonces_recentes %}
+        {% include 'partials/_annonce_card.html' %}
+        {% endfor %}
+      </div>
+      <!-- VOIR TOUT button -->
+      <div class="text-center mb-10">
+        <a href="{% url 'liste_annonces' %}"
+          class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl transition shadow-sm text-sm">
+          Voir toutes les annonces{% if total_count %}&nbsp;({{ total_count }}){% endif %} &rarr;
+        </a>
+      </div>
+      {% else %}
+      <div class="bg-white border border-gray-200 rounded-2xl p-12 text-center shadow-sm mb-10">
+        <div class="text-5xl mb-4">📭</div>
+        <p class="text-gray-500 mb-5">Aucune annonce pour le moment.</p>
+        <a href="{% url 'deposer_annonce' %}" class="btn btn-accent">
+          Déposer la première annonce
+        </a>
+      </div>
+      {% endif %}
+
+      <!-- Par catégorie -->
+      {% for code, cat_data in annonces_par_cat.items %}
+      {% if cat_data.annonces %}
+      <div class="mb-10">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            {% if code == 'vehicules' %}🚗{% elif code == 'immobilier' %}🏠{% elif code == 'electronique' %}📱{% elif code == 'emploi' %}💼{% elif code == 'services' %}🔧{% else %}📦{% endif %}
+            {{ cat_data.label }}
+          </h2>
+          <a href="{% url 'liste_annonces' %}?categorie={{ code }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium transition">Voir tout →</a>
+        </div>
+        <div class="ads-grid">
+          {% for annonce in cat_data.annonces %}
+          {% include 'partials/_annonce_card.html' %}
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if forloop.counter == 2 %}
+      <!-- BILLBOARD MILIEU (15 000 XPF/mois) -->
+      <div class="mb-10">
+        {% if pub_billboard_milieu %}
+        <a href="{{ pub_billboard_milieu.lien }}" target="_blank" rel="noopener sponsored"
+          class="billboard-wrap block">
+          <img src="{{ pub_billboard_milieu.get_image }}"
+            alt="{{ pub_billboard_milieu.titre }}"
+            class="billboard-img">
+        </a>
+        {% else %}
+        <a href="{% url 'tarifs_pubs' %}" class="billboard-milieu-empty">
+          <div class="billboard-milieu-empty__inner">
+            <div class="billboard-milieu-empty__badge">PUBLICITE</div>
+            <div class="billboard-milieu-empty__title">VOTRE MARQUE ICI</div>
+            <div class="billboard-milieu-empty__price">15 000 XPF / mois</div>
+            <div class="billboard-milieu-empty__cta">
+              Réserver → 89 61 06 13
+            </div>
+          </div>
+        </a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% endfor %}
+
+    </div>
+
+    <!-- SIDEBAR PUBS -->
+    {% with categories=categories %}
+    {% include 'partials/_sidebar_pubs.html' %}
+    {% endwith %}
+
+  </div>
+</div>
+
+{% endblock %}

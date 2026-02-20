@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4 py-12">
+  <div class="w-full max-w-md">
+
+    <div class="text-center mb-8">
+      <img src="{% static 'img/logo-tbg.webp' %}" alt="TBG" class="h-16 w-auto mx-auto mb-4">
+      <h1 class="text-2xl font-bold">Créer un compte</h1>
+      <p class="text-muted mt-1 text-sm">Gratuit — déposez vos annonces en quelques secondes</p>
+    </div>
+
+    <div class="bg-card border border-border rounded-2xl p-7">
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-xl text-sm">
+          {% for e in form.non_field_errors %}{{ e }}{% endfor %}
+        </div>
+        {% endif %}
+
+        <div>
+          <label class="block text-sm font-medium mb-1.5">{{ form.email.label }}</label>
+          {{ form.email }}
+          {% if form.email.errors %}<p class="text-red-400 text-xs mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1.5">{{ form.nom.label }}</label>
+          {{ form.nom }}
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium mb-1.5">{{ form.tel.label }}</label>
+            {{ form.tel }}
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5">{{ form.role.label }}</label>
+            {{ form.role }}
+          </div>
+        </div>
+
+        <div id="pro_fields" style="display:none">
+          <label class="block text-sm font-medium mb-1.5">
+            {{ form.nom_entreprise.label }} <span class="text-red-500">*</span>
+          </label>
+          {{ form.nom_entreprise }}
+          {% if form.nom_entreprise.errors %}
+          <p class="text-red-400 text-xs mt-1">{{ form.nom_entreprise.errors.0 }}</p>
+          {% endif %}
+          <p class="text-xs text-muted mt-1">Affiché sur vos annonces professionnelles</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1.5">{{ form.password.label }}</label>
+          {{ form.password }}
+          {% if form.password.errors %}<p class="text-red-400 text-xs mt-1">{{ form.password.errors.0 }}</p>{% endif %}
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5">{{ form.password2.label }}</label>
+          {{ form.password2 }}
+        </div>
+
+        <button type="submit" class="w-full bg-accent hover:bg-green-400 text-dark font-bold py-3 rounded-xl transition mt-2">
+          Créer mon compte gratuitement
+        </button>
+      </form>
+
+      <div class="mt-6 text-center text-sm text-muted">
+        Déjà un compte ?
+        <a href="{% url 'login' %}" class="text-accent hover:underline font-medium">Se connecter</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var roleEl = document.getElementById('id_role');
+  var proDiv = document.getElementById('pro_fields');
+  var entInput = document.querySelector('#pro_fields input');
+  function toggleProFields() {
+    var isPro = roleEl && roleEl.value === 'pro';
+    if (proDiv) proDiv.style.display = isPro ? '' : 'none';
+    if (entInput) entInput.required = isPro;
+  }
+  if (roleEl) {
+    roleEl.addEventListener('change', toggleProFields);
+    toggleProFields();
+  }
+})();
+</script>
+{% endblock %}

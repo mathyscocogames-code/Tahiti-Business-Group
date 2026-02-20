@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Mes messages{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-black text-gray-900">Mes messages</h1>
+    <a href="{% url 'liste_annonces' %}" class="text-sm text-blue-600 hover:text-blue-800 font-medium transition">
+      ← Parcourir les annonces
+    </a>
+  </div>
+
+  {% if conversations %}
+  <div class="space-y-2">
+    {% for conv in conversations %}
+    <div class="bg-white border border-gray-200 rounded-2xl p-4 hover:border-blue-300 hover:shadow-sm transition cursor-pointer flex gap-4 items-center group"
+      onclick="openContact({{ conv.annonce.pk }})">
+
+      <!-- Annonce thumbnail -->
+      <div class="flex-shrink-0">
+        {% if conv.annonce.get_main_photo %}
+        <img src="{{ conv.annonce.get_main_photo }}" class="w-16 h-16 object-cover rounded-xl border border-gray-200" alt="">
+        {% else %}
+        <div class="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center text-2xl">
+          {% if conv.annonce.categorie == 'vehicules' %}🚗{% elif conv.annonce.categorie == 'immobilier' %}🏠{% elif conv.annonce.categorie == 'electronique' %}📱{% elif conv.annonce.categorie == 'emploi' %}💼{% elif conv.annonce.categorie == 'services' %}🔧{% else %}📦{% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between mb-0.5">
+          <div class="font-bold text-gray-900 text-sm truncate group-hover:text-blue-600 transition">{{ conv.annonce.titre }}</div>
+          <div class="text-xs text-gray-400 flex-shrink-0 ml-3">{{ conv.last_msg.created_at|timesince }}</div>
+        </div>
+        <div class="text-xs text-gray-500 mb-1">
+          Avec <span class="font-semibold">{{ conv.other_user.nom|default:conv.other_user.email }}</span>
+        </div>
+        <div class="text-sm truncate {% if conv.unread %}text-gray-900 font-medium{% else %}text-gray-500{% endif %}">
+          {% if conv.last_msg.from_user == request.user %}<span class="text-gray-400">Vous : </span>{% endif %}
+          {{ conv.last_msg.content }}
+        </div>
+      </div>
+
+      <!-- Unread badge -->
+      {% if conv.unread %}
+      <div class="flex-shrink-0 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+        {{ conv.unread }}
+      </div>
+      {% endif %}
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="bg-white border border-gray-200 rounded-2xl p-12 text-center shadow-sm">
+    <div class="text-6xl mb-4">💬</div>
+    <div class="text-xl font-bold text-gray-800 mb-2">Aucun message</div>
+    <p class="text-gray-500 mb-6 text-sm">Contactez un vendeur depuis une annonce pour démarrer une conversation.</p>
+    <a href="{% url 'liste_annonces' %}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl transition text-sm">
+      Parcourir les annonces
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

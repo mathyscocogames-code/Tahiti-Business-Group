@@ -1,0 +1,44 @@
+<div class="ad-card group">
+  <!-- Main link: photo + body -->
+  <a href="{% url 'annonce_detail' annonce.pk %}" class="block ad-card__link">
+    <!-- Photo -->
+    <div class="relative overflow-hidden bg-gray-100" style="aspect-ratio:4/3">
+      {% if annonce.get_main_photo %}
+      <img data-src="{{ annonce.get_main_photo }}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 3'%3E%3C/svg%3E"
+        alt="{{ annonce.titre }}"
+        class="ad-card__img lazy w-full h-full absolute inset-0">
+      {% else %}
+      <div class="w-full h-full absolute inset-0 flex items-center justify-center text-4xl bg-gray-100">
+        {% if annonce.categorie == 'vehicules' %}🚗{% elif annonce.categorie == 'immobilier' %}🏠{% elif annonce.categorie == 'electronique' %}📱{% elif annonce.categorie == 'emploi' %}💼{% elif annonce.categorie == 'services' %}🔧{% else %}📦{% endif %}
+      </div>
+      {% endif %}
+      {% if annonce.boost %}
+      <div class="ad-card__badge">⭐ Boost</div>
+      {% endif %}
+      {% if annonce.photos|length > 1 %}
+      <div class="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full backdrop-blur-sm">
+        📷 {{ annonce.photos|length }}
+      </div>
+      {% endif %}
+    </div>
+    <!-- Body -->
+    <div class="ad-card__body">
+      <div class="ad-card__title">{{ annonce.titre }}</div>
+      <div class="ad-card__price">{{ annonce.get_prix_display_label }}</div>
+      <div class="ad-card__meta">
+        <span>📍 {{ annonce.localisation }}</span>
+        <span>👁 {{ annonce.views }}</span>
+      </div>
+    </div>
+  </a>
+  <!-- Contacter button (only for authenticated users who don't own the ad) -->
+  {% if user.is_authenticated %}{% if annonce.user != user %}
+  <div class="px-3 pb-3 pt-1">
+    <button type="button"
+      onclick="openContact('{% url 'contact_annonce' pk=annonce.pk %}')"
+      class="btn-contact-card">
+      ✉️ Contacter
+    </button>
+  </div>
+  {% endif %}{% endif %}
+</div>

@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% block title %}Modifier — {{ annonce.titre }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="layout-with-sidebar">
+
+    <!-- FORMULAIRE ÉDITION -->
+    <div class="layout-main">
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6 text-white">
+          <a href="{% url 'mes_annonces' %}" class="inline-flex items-center gap-1.5 text-blue-200 hover:text-white text-sm mb-3 transition">
+            ← Mes annonces
+          </a>
+          <h1 class="text-2xl font-black">Modifier l'annonce</h1>
+          <p class="text-blue-200 mt-1 text-sm truncate">{{ annonce.titre }}</p>
+        </div>
+
+        <div class="p-6 md:p-8">
+          <form method="post" enctype="multipart/form-data" class="space-y-5" id="editForm">
+            {% csrf_token %}
+
+            <!-- Titre -->
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Titre *</label>
+              <input type="text" name="titre" value="{{ annonce.titre }}" required
+                class="form-input" placeholder="Titre de l'annonce">
+            </div>
+
+            <!-- Catégorie + Sous-catégorie -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Catégorie *</label>
+                <select name="categorie" id="id_categorie" class="form-input" required>
+                  {% for code, label in categories %}
+                  <option value="{{ code }}" {% if annonce.categorie == code %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Sous-catégorie</label>
+                <select name="sous_categorie" id="id_sous_categorie" class="form-input">
+                  <option value="">— Toutes / Général</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Prix -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="prix-row">
+              <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Prix (XPF)</label>
+                <input type="number" name="prix" value="{{ annonce.prix }}" min="0" class="form-input">
+                <p class="text-xs text-gray-400 mt-1">Laissez 0 pour "Gratuit"</p>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Affichage prix</label>
+                <input type="text" name="prix_label" value="{{ annonce.prix_label }}"
+                  placeholder="Ex: À débattre, 15 000 XPF" class="form-input">
+              </div>
+            </div>
+
+            <!-- Localisation -->
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Localisation</label>
+              <input type="text" name="localisation" value="{{ annonce.localisation }}" class="form-input"
+                placeholder="Ex: Papeete, Faa'a, Moorea...">
+            </div>
+
+            <!-- Description -->
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Description *</label>
+              <textarea name="description" rows="6" required class="form-input"
+                placeholder="Décrivez votre article ou service...">{{ annonce.description }}</textarea>
+            </div>
+
+            <!-- ── Photos actuelles ── -->
+            {% if annonce.photos %}
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">
+                Photos actuelles ({{ annonce.photos|length }}/5)
+                <span class="text-gray-400 font-normal normal-case ml-1">— survolez pour supprimer</span>
+              </label>
+              <div class="grid grid-cols-3 sm:grid-cols-5 gap-3" id="currentPhotos">
+                {% for photo in annonce.photos %}
+                <div class="relative group photo-item" data-url="{{ photo }}">
+                  <img src="{{ photo }}" alt="Photo {{ forloop.counter }}"
+                    class="w-full aspect-square object-cover rounded-xl border-2 border-transparent transition-all group-hover:border-red-400 group-hover:opacity-70">
+                  <label class="absolute inset-0 flex items-center justify-center cursor-pointer rounded-xl">
+                    <input type="checkbox" name="delete_photos" value="{{ photo }}"
+                      class="hidden photo-delete-cb" data-idx="{{ forloop.counter0 }}">
+                    <div class="delete-overlay hidden group-hover:flex absolute inset-0 items-center justify-center bg-red-500/80 rounded-xl text-white font-black text-xl">✕</div>
+                  </label>
+                  <!-- Badge "À supprimer" quand coché -->
+                  <div class="delete-badge hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-black">✕</div>
+                </div>
+                {% endfor %}
+              </div>
+              <p class="text-xs text-gray-400 mt-1.5">Cliquez sur une photo pour la marquer à supprimer (rouge = sera supprimée)</p>
+            </div>
+            {% endif %}
+
+            <!-- ── Ajouter des photos ── -->
+            {% if remaining_slots > 0 %}
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">
+                Ajouter des photos
+                <span class="text-gray-400 font-normal normal-case">({{ annonce.photos|length }}/5 utilisées — encore {{ remaining_slots }} slot(s))</span>
+              </label>
+              <div id="dropzone"
+                class="border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-xl p-6 text-center transition cursor-pointer bg-gray-50 hover:bg-blue-50"
+                onclick="document.getElementById('photoInput').click()">
+                <div class="text-3xl mb-1">📷</div>
+                <div class="text-sm font-semibold text-gray-600">Cliquez ou glissez vos photos ici</div>
+                <div class="text-xs text-gray-400 mt-1">JPG, PNG, WebP • Max {{ remaining_slots }} photo(s) • Auto-convertis en WebP</div>
+                <input type="file" id="photoInput" name="photos" multiple accept="image/*"
+                  class="hidden" onchange="previewNewPhotos(this)">
+              </div>
+              <div id="newPhotoPreview" class="flex gap-2 flex-wrap mt-3"></div>
+            </div>
+            {% else %}
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-sm text-amber-800 flex items-center gap-2">
+              <span class="text-amber-500 text-lg">⚠️</span>
+              Limite de 5 photos atteinte. Supprimez des photos existantes pour en ajouter de nouvelles.
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="flex gap-3 pt-2">
+              <button type="submit" class="btn btn-primary flex-1 justify-center py-3 text-base font-black">
+                💾 Enregistrer les modifications
+              </button>
+              <a href="{% url 'mes_annonces' %}" class="btn btn-outline px-6 py-3">Annuler</a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    {% include 'partials/_sidebar_pubs.html' %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Sous-catégories dynamiques ─────────────────────────────────
+const SOUS_CATS = {{ sous_categories_json|safe }};
+const initialSousCat = "{{ annonce.sous_categorie }}";
+
+function updateSousCats(categorie, preselect) {
+  const sel = document.getElementById('id_sous_categorie');
+  sel.innerHTML = '<option value="">— Toutes / Général</option>';
+  (SOUS_CATS[categorie] || []).forEach(({ value, label }) => {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = label;
+    if (value === preselect) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+// Init avec la valeur actuelle
+updateSousCats(document.getElementById('id_categorie').value, initialSousCat);
+document.getElementById('id_categorie').addEventListener('change', function () {
+  updateSousCats(this.value, '');
+});
+
+// ── Toggle prix (caché pour emploi) ──────────────────────────
+function togglePrix(cat) {
+  const row = document.getElementById('prix-row');
+  if (row) row.style.display = cat === 'emploi' ? 'none' : '';
+}
+const catElEdit = document.getElementById('id_categorie');
+togglePrix(catElEdit.value);
+catElEdit.addEventListener('change', function() { togglePrix(this.value); });
+
+// ── Gestion suppression photos ─────────────────────────────────
+document.querySelectorAll('.photo-delete-cb').forEach(cb => {
+  const item   = cb.closest('.photo-item');
+  const badge  = item.querySelector('.delete-badge');
+  const img    = item.querySelector('img');
+  const overlay = item.querySelector('.delete-overlay');
+
+  item.addEventListener('click', (e) => {
+    // Ne pas déclencher si on clique sur le label lui-même (évite double toggle)
+    cb.checked = !cb.checked;
+    if (cb.checked) {
+      img.classList.add('opacity-40', 'border-red-500');
+      badge.classList.remove('hidden');
+      badge.classList.add('flex');
+      overlay.classList.add('flex');
+      overlay.classList.remove('hidden');
+    } else {
+      img.classList.remove('opacity-40', 'border-red-500');
+      badge.classList.add('hidden');
+      badge.classList.remove('flex');
+      overlay.classList.remove('flex');
+      overlay.classList.add('hidden');
+    }
+  });
+});
+
+// ── Prévisualisation nouvelles photos ──────────────────────────
+function previewNewPhotos(input) {
+  const preview = document.getElementById('newPhotoPreview');
+  preview.innerHTML = '';
+  Array.from(input.files).slice(0, {{ remaining_slots }}).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const wrap = document.createElement('div');
+      wrap.className = 'relative';
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.className = 'w-20 h-16 object-cover rounded-xl border border-gray-200 shadow-sm';
+      const badge = document.createElement('div');
+      badge.className = 'absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold';
+      badge.textContent = '+';
+      wrap.appendChild(img);
+      wrap.appendChild(badge);
+      preview.appendChild(wrap);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── Drag & drop ────────────────────────────────────────────────
+const dz = document.getElementById('dropzone');
+if (dz) {
+  ['dragover', 'dragenter'].forEach(ev => {
+    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('border-blue-500', 'bg-blue-50'); });
+  });
+  ['dragleave', 'drop'].forEach(ev => {
+    dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('border-blue-500', 'bg-blue-50'); });
+  });
+  dz.addEventListener('drop', e => {
+    const input = document.getElementById('photoInput');
+    input.files = e.dataTransfer.files;
+    previewNewPhotos(input);
+  });
+}
+</script>
+{% endblock %}

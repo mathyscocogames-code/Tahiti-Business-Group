@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Rubriques — Promo, Info & Nouveautés Tahiti{% endblock %}
+{% block meta_desc %}Promotions pros, actualités locales et nouveautés business en Polynésie française sur Tahiti Business Group.{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-10">
+
+  <!-- Hero -->
+  <div class="mb-12 border-b-2 border-gray-900 pb-6">
+    <h1 class="text-4xl font-bold text-gray-900 mb-3">Rubriques TBG</h1>
+    <p class="text-gray-500 text-base max-w-xl">
+      Promotions professionnelles · Actualités locales · Nouveautés business à Tahiti
+    </p>
+    {% if user.is_authenticated %}
+    <div class="flex flex-wrap gap-2 mt-5">
+      {% if user.is_pro %}
+      <a href="{% url 'deposer_promo' %}"
+         class="inline-flex items-center gap-1.5 bg-gray-900 text-white text-xs font-bold px-4 py-2 hover:bg-black transition">
+        💰 Déposer une promo
+      </a>
+      <a href="{% url 'deposer_nouveaute' %}"
+         class="inline-flex items-center gap-1.5 bg-gray-900 text-white text-xs font-bold px-4 py-2 hover:bg-black transition">
+        🚀 Publier une nouveauté
+      </a>
+      {% endif %}
+      <a href="{% url 'deposer_info' %}"
+         class="inline-flex items-center gap-1.5 border-2 border-gray-900 text-gray-900 text-xs font-bold px-4 py-2 hover:bg-gray-100 transition">
+        📰 Soumettre une info
+      </a>
+      {% if user.is_staff %}
+      <a href="{% url 'moderation_dashboard' %}"
+         class="inline-flex items-center gap-1.5 border border-gray-400 text-gray-500 text-xs font-semibold px-4 py-2 hover:border-gray-900 hover:text-gray-900 transition">
+        🛡️ Modération
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ── PROMO ─────────────────────────────────────────────────────── -->
+  <section class="mb-16" id="promos">
+    <div class="rubrique-section-header">
+      <h2>Promos &amp; Réductions</h2>
+      <span class="rubrique-section-badge">PRO</span>
+    </div>
+    {% if promos %}
+    <div class="rubrique-grid">
+      {% for p in promos %}
+      <a href="{{ p.lien_promo|default:'#' }}"
+         {% if p.lien_promo %}target="_blank" rel="noopener"{% endif %}
+         class="article-card">
+        <div class="article-card__image">
+          <span class="article-card__emoji">💰</span>
+        </div>
+        <div class="article-card__body">
+          <span class="article-card__badge">Promo</span>
+          <div class="article-card__title">{{ p.titre }}</div>
+          <div class="article-card__desc">{{ p.contenu }}</div>
+          <div class="article-card__meta">
+            <span>{{ p.pro_user.nom|default:p.pro_user.email }} · {{ p.created_at|date:"d/m/Y" }}</span>
+            {% if p.lien_promo %}
+            <span class="article-card__cta">Voir l'offre →</span>
+            {% endif %}
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="border-2 border-dashed border-gray-300 p-10 text-center">
+      <div class="text-4xl mb-2 grayscale">💰</div>
+      <p class="text-gray-400 text-sm font-medium">Aucune promo validée pour l'instant.</p>
+      {% if user.is_pro %}
+      <a href="{% url 'deposer_promo' %}" class="mt-3 inline-block text-xs font-bold underline text-gray-700">
+        Soyez le premier à publier →
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- ── INFO ──────────────────────────────────────────────────────── -->
+  <section class="mb-16" id="info">
+    <div class="rubrique-section-header">
+      <h2>Actualités &amp; Infos</h2>
+    </div>
+    {% if infos %}
+    <div class="rubrique-grid">
+      {% for a in infos %}
+      <a href="{{ a.source_media|default:'#' }}"
+         {% if a.source_media %}target="_blank" rel="noopener"{% endif %}
+         class="article-card">
+        <div class="article-card__image">
+          <span class="article-card__emoji">📰</span>
+        </div>
+        <div class="article-card__body">
+          <span class="article-card__badge">Info</span>
+          <div class="article-card__title">{{ a.titre }}</div>
+          <div class="article-card__desc">{{ a.contenu }}</div>
+          <div class="article-card__meta">
+            <span>{% if a.auteur %}{{ a.auteur.nom|default:a.auteur.email }}{% else %}TBG{% endif %} · {{ a.created_at|date:"d/m/Y" }}</span>
+            {% if a.source_media %}
+            <span class="article-card__cta">Lire la source →</span>
+            {% endif %}
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="border-2 border-dashed border-gray-300 p-10 text-center">
+      <div class="text-4xl mb-2 grayscale">📰</div>
+      <p class="text-gray-400 text-sm font-medium">Aucune actualité validée pour l'instant.</p>
+      {% if user.is_authenticated %}
+      <a href="{% url 'deposer_info' %}" class="mt-3 inline-block text-xs font-bold underline text-gray-700">
+        Soumettre une actualité →
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- ── NOUVEAUTÉ ─────────────────────────────────────────────────── -->
+  <section class="mb-16" id="nouveautes">
+    <div class="rubrique-section-header">
+      <h2>Nouveautés Business</h2>
+      <span class="rubrique-section-badge">PRO</span>
+    </div>
+    {% if nouveautes %}
+    <div class="rubrique-grid">
+      {% for n in nouveautes %}
+      <a href="{{ n.lien_redirection|default:'#' }}"
+         {% if n.lien_redirection %}target="_blank" rel="noopener"{% endif %}
+         class="article-card">
+        <div class="article-card__image">
+          <span class="article-card__emoji">🚀</span>
+        </div>
+        <div class="article-card__body">
+          <span class="article-card__badge">Nouveauté</span>
+          <div class="article-card__title">{{ n.titre }}</div>
+          <div class="article-card__desc">{{ n.contenu }}</div>
+          <div class="article-card__meta">
+            <span>{{ n.pro_user.nom|default:n.pro_user.email }} · {{ n.created_at|date:"d/m/Y" }}</span>
+            {% if n.lien_redirection %}
+            <span class="article-card__cta">En savoir plus →</span>
+            {% endif %}
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="border-2 border-dashed border-gray-300 p-10 text-center">
+      <div class="text-4xl mb-2 grayscale">🚀</div>
+      <p class="text-gray-400 text-sm font-medium">Aucune nouveauté validée pour l'instant.</p>
+      {% if user.is_pro %}
+      <a href="{% url 'deposer_nouveaute' %}" class="mt-3 inline-block text-xs font-bold underline text-gray-700">
+        Publiez votre nouveauté →
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- CTA Banner -->
+  <div class="border-2 border-gray-900 p-8 text-center">
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">Vous êtes un professionnel ?</h2>
+    <p class="text-gray-500 mb-6 text-sm max-w-md mx-auto">
+      Publiez vos promos et nouveautés sur TBG — la plateforme n°1 de Polynésie française.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      {% if user.is_pro %}
+      <a href="{% url 'deposer_promo' %}"
+         class="bg-gray-900 text-white font-bold px-6 py-3 hover:bg-black transition text-sm">
+        💰 Déposer une promo
+      </a>
+      <a href="{% url 'deposer_nouveaute' %}"
+         class="border-2 border-gray-900 text-gray-900 font-bold px-6 py-3 hover:bg-gray-100 transition text-sm">
+        🚀 Publier une nouveauté
+      </a>
+      {% else %}
+      <a href="{% url 'deposer_annonce' %}"
+         class="bg-gray-900 text-white font-bold px-6 py-3 hover:bg-black transition text-sm">
+        ✚ Déposer une annonce gratuite
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

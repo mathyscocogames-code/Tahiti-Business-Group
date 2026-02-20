@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>{% block title %}Tahiti Business Group{% endblock %} — Annonces Polynésie</title>
+  <meta name="description" content="{% block meta_desc %}Annonces gratuites en Polynésie française. Achetez et vendez véhicules, immobilier, électronique, emploi.{% endblock %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans:  ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Libre Baskerville', 'Georgia', 'serif'],
+          },
+          colors: { primary: '#1a6cf1', accent: '#059669' }
+        }
+      }
+    }
+  </script>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+  <link rel="icon" type="image/svg+xml" href="{% static 'img/logo-tbg.svg' %}">
+  <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}" sizes="any">
+  <link rel="apple-touch-icon" href="{% static 'img/favicon-180.webp' %}">
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <meta name="theme-color" content="#1a6cf1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="TBG">
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:locale"      content="fr_PF">
+  <meta property="og:site_name"   content="Tahiti Business Group">
+  <meta property="og:title"       content="{% block og_title %}Tahiti Business Group — Annonces Polynésie{% endblock %}">
+  <meta property="og:description" content="{% block og_desc %}Annonces gratuites en Polynésie française. Véhicules, immobilier, électronique, emploi.{% endblock %}">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+  <meta property="og:image"       content="{% block og_image %}{% static 'img/og-image.webp' %}{% endblock %}">
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header class="bg-white sticky top-0 z-50 header-shadow">
+
+  <!-- ── Zone 1 : Logo · Recherche · Auth ── -->
+  <div class="border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 flex items-center h-16 gap-3">
+
+      <!-- Logo -->
+      <a href="{% url 'index' %}" class="flex-shrink-0 mr-2">
+        <img src="{% static 'img/logo-tbg.svg' %}" alt="Tahiti Business Group" class="logo-header">
+      </a>
+
+      <!-- Barre de recherche -->
+      <form action="{% url 'liste_annonces' %}" method="get" class="flex-1 max-w-2xl mx-auto">
+        <div class="search-bar">
+          <input type="text" name="q" value="{{ request.GET.q }}"
+            placeholder="Rechercher une annonce..."
+            class="search-bar__input">
+          <button type="submit" class="search-bar__btn" aria-label="Rechercher">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <!-- Actions droite -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <a href="{% url 'deposer_annonce' %}" class="hidden sm:inline-flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl text-sm transition shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+          </svg>
+          Déposer
+        </a>
+
+        <!-- Hamburger catégories (mobile) -->
+        <button class="hamburger-btn" onclick="openCatMenu()" aria-label="Catégories" id="hamburgerBtn">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+        {% if user.is_authenticated %}
+        <!-- Messages badge -->
+        <a href="{% url 'mes_messages' %}" class="msg-icon-header relative flex items-center justify-center w-9 h-9 rounded-xl hover:bg-gray-100 transition flex-shrink-0" title="Mes messages">
+          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+          </svg>
+          {% if unread_count %}
+          <span class="msg-badge absolute -top-0.5 -right-0.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center font-bold leading-none" style="font-size:9px">
+            {{ unread_count }}
+          </span>
+          {% endif %}
+        </a>
+        <div class="cat-nav-item user-menu">
+          <button class="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-gray-100 transition text-sm font-medium">
+            <div class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-black flex-shrink-0">
+              {{ user.nom|first|upper|default:user.email|first|upper }}
+            </div>
+            <span class="hidden md:block text-gray-700 max-w-24 truncate">{{ user.nom|default:user.email|truncatechars:14 }}</span>
+            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="cat-dropdown cat-dropdown--right">
+            <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+              <div class="text-xs text-gray-500">{{ user.get_role_display }}</div>
+              <div class="text-sm font-semibold text-gray-800 truncate mt-0.5">{{ user.email }}</div>
+            </div>
+            <a href="{% url 'mon_compte' %}">Mon compte</a>
+            <a href="{% url 'mes_annonces' %}">Mes annonces</a>
+            {% if user.is_staff %}
+            <a href="{% url 'admin_dashboard' %}" class="user-menu-admin">Dashboard admin</a>
+            <a href="/admin/" class="user-menu-django">Django Admin</a>
+            {% endif %}
+            <div class="user-menu-sep">
+              <a href="{% url 'logout' %}" class="user-menu-logout">Déconnexion</a>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <a href="{% url 'login' %}" class="text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition font-medium">Connexion</a>
+        <a href="{% url 'register' %}" class="hidden sm:inline-block text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition font-semibold shadow-sm">Inscription</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Zone 2 : Navigation catégories + dropdowns ── -->
+  <div id="cat-zone-2" class="border-b border-gray-200">
+    <nav class="max-w-7xl mx-auto px-4 cat-nav" aria-label="Catégories">
+
+      <a href="{% url 'liste_annonces' %}" class="cat-nav-link cat-nav-link--all">Tout</a>
+
+      <!-- Véhicules -->
+      <div class="cat-nav-item">
+        <a href="{% url 'liste_annonces' %}?categorie=vehicules" class="cat-nav-link">
+          🚗 Véhicules
+          <svg class="cat-nav-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+        <div class="cat-dropdown">
+          <div class="cat-dropdown__header">Véhicules</div>
+          <a href="{% url 'liste_annonces' %}?categorie=vehicules">Toutes</a>
+          <a href="{% url 'liste_annonces' %}?categorie=vehicules&sous_cat=vehicules-4x4">Voitures / 4 roues</a>
+          <a href="{% url 'liste_annonces' %}?categorie=vehicules&sous_cat=vehicules-2roues">2 roues (scooters/motos)</a>
+          <a href="{% url 'liste_annonces' %}?categorie=vehicules&sous_cat=vehicules-bateaux">Bateaux &amp; jet-skis</a>
+          <a href="{% url 'liste_annonces' %}?categorie=vehicules&sous_cat=vehicules-utilitaires">Utilitaires &amp; camions</a>
+          <a href="{% url 'liste_annonces' %}?categorie=vehicules&sous_cat=vehicules-pieces">Pièces auto &amp; accessoires</a>
+        </div>
+      </div>
+
+      <!-- Immobilier -->
+      <div class="cat-nav-item">
+        <a href="{% url 'liste_annonces' %}?categorie=immobilier" class="cat-nav-link">
+          🏠 Immobilier
+          <svg class="cat-nav-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+        <div class="cat-dropdown">
+          <div class="cat-dropdown__header">Immobilier</div>
+          <a href="{% url 'liste_annonces' %}?categorie=immobilier">Toutes</a>
+          <a href="{% url 'liste_annonces' %}?categorie=immobilier&sous_cat=immo-appartements">Appartements &amp; studios</a>
+          <a href="{% url 'liste_annonces' %}?categorie=immobilier&sous_cat=immo-maisons">Maisons &amp; villas</a>
+          <a href="{% url 'liste_annonces' %}?categorie=immobilier&sous_cat=immo-terrains">Terrains &amp; lots</a>
+          <a href="{% url 'liste_annonces' %}?categorie=immobilier&sous_cat=immo-bureaux">Bureaux &amp; commerces</a>
+          <a href="{% url 'liste_annonces' %}?categorie=immobilier&sous_cat=immo-saisonnieres">Saisonnières (Arue/Papeete)</a>
+          <a href="{% url 'liste_annonces' %}?categorie=immobilier&sous_cat=immo-parkings">Parkings &amp; garages</a>
+        </div>
+      </div>
+
+      <!-- Électronique -->
+      <div class="cat-nav-item">
+        <a href="{% url 'liste_annonces' %}?categorie=electronique" class="cat-nav-link">
+          📱 Électronique
+          <svg class="cat-nav-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+        <div class="cat-dropdown">
+          <div class="cat-dropdown__header">Électronique</div>
+          <a href="{% url 'liste_annonces' %}?categorie=electronique">Toutes</a>
+          <a href="{% url 'liste_annonces' %}?categorie=electronique&sous_cat=elec-telephones">Téléphones &amp; accessoires</a>
+          <a href="{% url 'liste_annonces' %}?categorie=electronique&sous_cat=elec-ordinateurs">Ordinateurs &amp; tablettes</a>
+          <a href="{% url 'liste_annonces' %}?categorie=electronique&sous_cat=elec-tv">TV &amp; Audio</a>
+          <a href="{% url 'liste_annonces' %}?categorie=electronique&sous_cat=elec-jeux">Jeux vidéo</a>
+          <a href="{% url 'liste_annonces' %}?categorie=electronique&sous_cat=elec-electromenager">Électroménager</a>
+        </div>
+      </div>
+
+      <!-- Emploi -->
+      <div class="cat-nav-item">
+        <a href="{% url 'liste_annonces' %}?categorie=emploi" class="cat-nav-link">
+          💼 Emploi
+          <svg class="cat-nav-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+        <div class="cat-dropdown">
+          <div class="cat-dropdown__header">Emploi</div>
+          <a href="{% url 'liste_annonces' %}?categorie=emploi">Toutes</a>
+          <a href="{% url 'liste_annonces' %}?categorie=emploi&sous_cat=emploi-commerciaux">Commerciaux</a>
+          <a href="{% url 'liste_annonces' %}?categorie=emploi&sous_cat=emploi-informatique">Informatique &amp; Dév</a>
+          <a href="{% url 'liste_annonces' %}?categorie=emploi&sous_cat=emploi-hotellerie">Hôtellerie &amp; Resto</a>
+          <a href="{% url 'liste_annonces' %}?categorie=emploi&sous_cat=emploi-btp">BTP &amp; Construction</a>
+          <a href="{% url 'liste_annonces' %}?categorie=emploi&sous_cat=emploi-services">Services à la personne</a>
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div class="cat-nav-item">
+        <a href="{% url 'liste_annonces' %}?categorie=services" class="cat-nav-link">
+          🔧 Services
+          <svg class="cat-nav-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+        <div class="cat-dropdown">
+          <div class="cat-dropdown__header">Services</div>
+          <a href="{% url 'liste_annonces' %}?categorie=services">Toutes</a>
+          <a href="{% url 'liste_annonces' %}?categorie=services&sous_cat=services-travaux">Travaux &amp; BTP</a>
+          <a href="{% url 'liste_annonces' %}?categorie=services&sous_cat=services-cours">Cours &amp; Formation</a>
+          <a href="{% url 'liste_annonces' %}?categorie=services&sous_cat=services-transport">Transport</a>
+          <a href="{% url 'liste_annonces' %}?categorie=services&sous_cat=services-sante">Santé &amp; Beauté</a>
+          <a href="{% url 'liste_annonces' %}?categorie=services&sous_cat=services-jardinage">Jardinage</a>
+        </div>
+      </div>
+
+      <!-- Autres -->
+      <div class="cat-nav-item">
+        <a href="{% url 'liste_annonces' %}?categorie=autres" class="cat-nav-link">
+          📦 Autres
+          <svg class="cat-nav-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+        <div class="cat-dropdown">
+          <div class="cat-dropdown__header">Vente privée &amp; Autres</div>
+          <a href="{% url 'liste_annonces' %}?categorie=autres">Toutes</a>
+          <a href="{% url 'liste_annonces' %}?categorie=autres&sous_cat=autres-electronique">Électronique &amp; PC</a>
+          <a href="{% url 'liste_annonces' %}?categorie=autres&sous_cat=autres-meubles">Meubles &amp; Déco</a>
+          <a href="{% url 'liste_annonces' %}?categorie=autres&sous_cat=autres-vetements">Vêtements &amp; Mode</a>
+          <a href="{% url 'liste_annonces' %}?categorie=autres&sous_cat=autres-sport">Sport &amp; Loisirs</a>
+          <a href="{% url 'liste_annonces' %}?categorie=autres&sous_cat=autres-puericulture">Puériculture</a>
+        </div>
+      </div>
+
+      <div class="cat-nav-item">
+        <a href="{% url 'rubriques_index' %}" class="cat-nav-link">
+          📰 Rubriques
+          <svg class="cat-nav-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+        <div class="cat-dropdown cat-dropdown--right">
+          <div class="cat-dropdown__header">Rubriques TBG</div>
+          <a href="{% url 'rubriques_index' %}">💰 Promos pro</a>
+          <a href="{% url 'rubriques_index' %}">📰 Actualités</a>
+          <a href="{% url 'rubriques_index' %}">🚀 Nouveautés business</a>
+          {% if user.is_pro %}<a href="{% url 'deposer_promo' %}">➕ Déposer une promo</a>{% endif %}
+          {% if user.is_staff %}<a href="{% url 'moderation_dashboard' %}">🛡️ Modération</a>{% endif %}
+        </div>
+      </div>
+
+      <div class="cat-nav-item">
+        <a href="{% url 'page_info' %}" class="cat-nav-link">
+          📢 Info
+          <svg class="cat-nav-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+        <div class="cat-dropdown cat-dropdown--right">
+          <div class="cat-dropdown__header">Informations</div>
+          <a href="{% url 'page_info' %}">Comment utiliser</a>
+          <a href="{% url 'page_info' %}#tarifs">Tarifs publicités</a>
+          <a href="{% url 'page_info' %}#contact">Nous contacter</a>
+          <a href="{% url 'page_info' %}#faq">FAQ</a>
+        </div>
+      </div>
+
+      <div class="cat-nav-item">
+        <a href="{% url 'page_business' %}" class="cat-nav-link">
+          💼 Business
+          <svg class="cat-nav-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+        <div class="cat-dropdown cat-dropdown--right">
+          <div class="cat-dropdown__header">Business Tahiti</div>
+          <a href="{% url 'page_business' %}">Nouveautés Tahiti</a>
+          <a href="{% url 'page_business' %}#recrutements">Recrutements</a>
+          <a href="{% url 'page_business' %}#tendances">Tendances marché</a>
+          <a href="{% url 'page_business' %}#partenaires">Partenaires</a>
+        </div>
+      </div>
+
+      <div class="flex-1"></div>
+
+      <a href="{% url 'tarifs_pubs' %}" class="cat-nav-link cat-nav-link--pub flex-shrink-0">✦ Faire de la pub</a>
+    </nav>
+  </div>
+
+</header>
+
+<!-- ═══ SLIDE MENU — Catégories (mobile) ═══ -->
+<div class="slide-overlay" id="slideOverlay" onclick="closeCatMenu()"></div>
+<div class="slide-menu" id="slideMenu">
+  <div class="slide-menu__header">
+    <span class="font-bold text-gray-900 text-base">Catégories</span>
+    <button onclick="closeCatMenu()" class="slide-menu__close" aria-label="Fermer">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div class="slide-menu__body">
+    <a href="{% url 'liste_annonces' %}" class="slide-cat-link slide-cat-link--all"><span class="slide-cat-icon">🔍</span> Toutes les annonces</a>
+    <a href="{% url 'liste_annonces' %}?categorie=vehicules" class="slide-cat-link"><span class="slide-cat-icon">🚗</span> Véhicules</a>
+    <a href="{% url 'liste_annonces' %}?categorie=immobilier" class="slide-cat-link"><span class="slide-cat-icon">🏠</span> Immobilier</a>
+    <a href="{% url 'liste_annonces' %}?categorie=electronique" class="slide-cat-link"><span class="slide-cat-icon">📱</span> Électronique</a>
+    <a href="{% url 'liste_annonces' %}?categorie=emploi" class="slide-cat-link"><span class="slide-cat-icon">💼</span> Emploi</a>
+    <a href="{% url 'liste_annonces' %}?categorie=services" class="slide-cat-link"><span class="slide-cat-icon">🔧</span> Services</a>
+    <a href="{% url 'liste_annonces' %}?categorie=autres" class="slide-cat-link"><span class="slide-cat-icon">📦</span> Autres</a>
+    <div class="slide-menu__sep"></div>
+    <div class="slide-menu__section-title">Infos &amp; Aide</div>
+    <a href="{% url 'page_info' %}" class="slide-cat-link"><span class="slide-cat-icon">📢</span> Guide &amp; FAQ</a>
+    <a href="{% url 'tarifs_pubs' %}" class="slide-cat-link"><span class="slide-cat-icon">💰</span> Tarifs publicités</a>
+    <div class="slide-menu__sep"></div>
+    <div class="slide-menu__section-title">Business Tahiti</div>
+    <a href="{% url 'page_business' %}" class="slide-cat-link"><span class="slide-cat-icon">💼</span> Nouveautés &amp; Recrutements</a>
+    <div class="slide-menu__sep"></div>
+    <div class="slide-menu__section-title">Rubriques</div>
+    <a href="{% url 'rubriques_index' %}" class="slide-cat-link"><span class="slide-cat-icon">📰</span> Promo, Info &amp; Nouveautés</a>
+    {% if user.is_pro %}
+    <a href="{% url 'deposer_promo' %}" class="slide-cat-link"><span class="slide-cat-icon">💰</span> Déposer une promo</a>
+    <a href="{% url 'deposer_nouveaute' %}" class="slide-cat-link"><span class="slide-cat-icon">🚀</span> Publier une nouveauté</a>
+    {% endif %}
+    {% if user.is_staff %}
+    <a href="{% url 'moderation_dashboard' %}" class="slide-cat-link slide-cat-link--admin"><span class="slide-cat-icon">🛡️</span> Modération</a>
+    <a href="{% url 'admin_stats' %}" class="slide-cat-link slide-cat-link--admin"><span class="slide-cat-icon">📊</span> Dashboard stats</a>
+    {% endif %}
+    <div class="slide-menu__sep"></div>
+    <a href="{% url 'deposer_annonce' %}" class="slide-cat-link slide-cat-link--cta"><span class="slide-cat-icon">✚</span> Déposer une annonce</a>
+  </div>
+</div>
+
+<!-- MESSAGES -->
+{% if messages %}
+<div class="max-w-7xl mx-auto px-4 pt-3 space-y-2">
+  {% for message in messages %}
+  <div class="flex items-center gap-3 p-3.5 rounded-xl border text-sm font-medium
+    {% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-800
+    {% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-800
+    {% elif message.tags == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-800
+    {% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %}">
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main>{% block content %}{% endblock %}</main>
+
+<!-- FOOTER -->
+<footer class="bg-white border-t border-gray-200 mt-16">
+  <div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-xs">TBG</div>
+          <span class="font-bold text-lg">Tahiti Business <span class="text-blue-600">Groupe</span></span>
+        </div>
+        <p class="text-gray-500 text-sm leading-relaxed max-w-sm">
+          La plateforme d'annonces gratuites #1 en Polynésie française. Achetez, vendez, échangez en toute confiance.
+        </p>
+        <div class="mt-5 space-y-2">
+          <a href="tel:0689610613" class="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 transition font-medium w-fit">
+            📞 89 61 06 13
+          </a>
+          <a href="mailto:cocogamestahiti@gmail.com" class="flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600 transition w-fit">
+            ✉️ cocogamestahiti@gmail.com
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider mb-3 text-gray-900">Catégories</h4>
+        <ul class="space-y-1.5 text-sm text-gray-500">
+          <li><a href="{% url 'liste_annonces' %}?categorie=vehicules" class="hover:text-blue-600 transition">🚗 Véhicules</a></li>
+          <li><a href="{% url 'liste_annonces' %}?categorie=immobilier" class="hover:text-blue-600 transition">🏠 Immobilier</a></li>
+          <li><a href="{% url 'liste_annonces' %}?categorie=electronique" class="hover:text-blue-600 transition">📱 Électronique</a></li>
+          <li><a href="{% url 'liste_annonces' %}?categorie=emploi" class="hover:text-blue-600 transition">💼 Emploi</a></li>
+          <li><a href="{% url 'liste_annonces' %}?categorie=services" class="hover:text-blue-600 transition">🔧 Services</a></li>
+          <li><a href="{% url 'liste_annonces' %}?categorie=autres" class="hover:text-blue-600 transition">📦 Autres</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider mb-3 text-gray-900">Publicité</h4>
+        <ul class="space-y-1.5 text-sm text-gray-500">
+          <li><a href="{% url 'tarifs_pubs' %}" class="hover:text-blue-600 transition">Tarifs &amp; emplacements</a></li>
+          <li><a href="{% url 'demande_pub' %}" class="hover:text-blue-600 transition">Réserver un emplacement</a></li>
+          <li class="pt-2 border-t border-gray-100 space-y-1">
+            <div class="text-xs">Billboard — <strong class="text-gray-800">25 000 XPF/mois</strong></div>
+            <div class="text-xs">Sidebar Haut — <strong class="text-gray-800">15 000 XPF/mois</strong></div>
+            <div class="text-xs">Sidebar Milieu — <strong class="text-gray-800">10 000 XPF/mois</strong></div>
+            <div class="text-xs">Sidebar Bas — <strong class="text-gray-800">5 000 XPF/mois</strong></div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <p class="text-gray-400 text-xs">© 2026 Tahiti Business Group • 89 61 06 13 • cocogamestahiti@gmail.com</p>
+      <p class="text-gray-300 text-xs">Polynésie française 🌺</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Bottom navigation (mobile) -->
+<nav class="bottom-nav" aria-label="Navigation mobile">
+
+  <a href="{% url 'index' %}" class="bottom-nav__item">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+    </svg>
+    <span>Accueil</span>
+  </a>
+
+  <a href="{% url 'liste_annonces' %}" class="bottom-nav__item">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    <span>Annonces</span>
+  </a>
+
+  <a href="{% url 'deposer_annonce' %}" class="bottom-nav__item bottom-nav__item--deposer">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+    </svg>
+  </a>
+
+  <a href="{% url 'mes_favoris' %}" class="bottom-nav__item{% if request.resolver_match.url_name == 'mes_favoris' %} bottom-nav__item--active{% endif %}">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+    </svg>
+    <span>Favoris</span>
+  </a>
+
+  <a href="{% url 'mes_messages' %}" class="bottom-nav__item">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+    </svg>
+    {% if unread_count %}<span class="bottom-nav__badge">{{ unread_count }}</span>{% endif %}
+    <span>Messages</span>
+  </a>
+
+  {% if user.is_authenticated %}
+  <a href="{% url 'mon_compte' %}" class="bottom-nav__item">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+    </svg>
+    <span>Compte</span>
+  </a>
+  {% else %}
+  <a href="{% url 'login' %}" class="bottom-nav__item">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+    </svg>
+    <span>Connexion</span>
+  </a>
+  {% endif %}
+
+</nav>
+
+{% load static %}
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+
+<!-- ═══ CONTACT MODAL ═══ -->
+<div id="contactModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeContact()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="font-bold text-gray-900 text-sm">✉️ Contacter le vendeur</span>
+      <button onclick="closeContact()" class="modal-close-btn" aria-label="Fermer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div id="modalContent" class="modal-body">
+      <div class="text-center py-10 text-gray-400">
+        <div class="text-4xl mb-2">&#x1F4AC;</div>Chargement…
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Slide menu catégories ──────────────────────────────────────────────
+function openCatMenu() {
+  document.getElementById('slideMenu').classList.add('slide-menu--open');
+  document.getElementById('slideOverlay').classList.add('slide-overlay--visible');
+  document.body.style.overflow = 'hidden';
+}
+function closeCatMenu() {
+  document.getElementById('slideMenu').classList.remove('slide-menu--open');
+  document.getElementById('slideOverlay').classList.remove('slide-overlay--visible');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCatMenu(); });
+</script>
+
+<script>
+// ── Contact Modal ────────────────────────────────────────────────────────────
+function openContact(url) {
+  const modal = document.getElementById('contactModal');
+  const content = document.getElementById('modalContent');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  content.innerHTML = '<div class="text-center py-10 text-gray-400"><div class="text-4xl mb-2">&#x1F4AC;</div>Chargement…</div>';
+  fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { closeContact(); return; }
+      content.innerHTML = data.html;
+      const t = document.getElementById('chatThread');
+      if (t) t.scrollTop = t.scrollHeight;
+      const form = document.getElementById('contactForm');
+      if (form) form.addEventListener('submit', submitContact);
+    })
+    .catch(() => {
+      content.innerHTML = '<div class="text-center py-8 text-red-400">Erreur de chargement</div>';
+    });
+}
+
+function closeContact() {
+  document.getElementById('contactModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function submitContact(e) {
+  e.preventDefault();
+  const form = e.target;
+  const url  = form.dataset.url;
+  const btn  = form.querySelector('button[type=submit]');
+  btn.disabled = true;
+  fetch(url, {
+    method: 'POST',
+    body: new FormData(form),
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        let t = document.getElementById('chatThread');
+        if (!t) {
+          t = document.createElement('div');
+          t.id = 'chatThread';
+          t.className = 'chat-thread';
+          form.before(t);
+          // Remove empty state if present
+          const empty = t.previousSibling;
+        }
+        t.insertAdjacentHTML('beforeend', data.html);
+        t.scrollTop = t.scrollHeight;
+        form.querySelector('textarea').value = '';
+        // Clear badge since we just sent a message
+        const badge = document.querySelector('.msg-badge');
+        if (badge) badge.remove();
+      }
+      btn.disabled = false;
+    })
+    .catch(() => { btn.disabled = false; });
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeContact(); });
+</script>
+
+</body>
+</html>

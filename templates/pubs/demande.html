@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Réserver un emplacement pub{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-12">
+
+  <div class="text-center mb-8">
+    <h1 class="text-2xl font-bold mb-2">Réserver un emplacement publicitaire</h1>
+    <p class="text-muted text-sm">Remplissez ce formulaire et nous vous contacterons dans les 24h</p>
+  </div>
+
+  <div class="bg-card border border-border rounded-2xl p-7">
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1.5">{{ form.nom.label }}</label>
+          {{ form.nom }}
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5">{{ form.entreprise.label }}</label>
+          {{ form.entreprise }}
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5">{{ form.email.label }}</label>
+          {{ form.email }}
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5">{{ form.tel.label }}</label>
+          {{ form.tel }}
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1.5">{{ form.emplacement_souhaite.label }}</label>
+        {{ form.emplacement_souhaite }}
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1.5">{{ form.message.label }}</label>
+        {{ form.message }}
+      </div>
+
+      <button type="submit" class="w-full bg-accent hover:bg-green-400 text-dark font-bold py-3 rounded-xl transition">
+        Envoyer ma demande
+      </button>
+    </form>
+
+    <div class="mt-6 pt-4 border-t border-border text-center text-sm text-muted">
+      Ou appelez-nous directement :
+      <a href="tel:0689610613" class="text-accent font-bold hover:underline">89 61 06 13</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

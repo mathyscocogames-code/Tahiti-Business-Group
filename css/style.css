@@ -1,0 +1,415 @@
+/* ============================================
+   TAHITI BUSINESS GROUPE — Custom Styles
+   ============================================ */
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #111522; }
+::-webkit-scrollbar-thumb { background: #2a3050; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4570; }
+html { scroll-behavior: smooth; }
+
+/* ---- Scrollbar Hide (category bar) ---- */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ---- Header scroll effect ---- */
+#header.scrolled > div:first-child {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* ---- Hero Glows ---- */
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.3;
+  pointer-events: none;
+}
+.hero-glow-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, #1a6cf1 0%, transparent 70%);
+  top: -200px; left: -100px;
+  animation: float 8s ease-in-out infinite;
+}
+.hero-glow-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #00e687 0%, transparent 70%);
+  bottom: -150px; right: -100px;
+  animation: float 10s ease-in-out infinite reverse;
+}
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* ---- Category Buttons ---- */
+.cat-btn {
+  white-space: nowrap;
+  padding: 0.4rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+.cat-btn:hover {
+  color: white;
+  background: rgba(255,255,255,0.05);
+}
+.cat-btn.active {
+  color: #00e687;
+  background: rgba(0,230,135,0.08);
+  border-color: rgba(0,230,135,0.2);
+}
+
+/* ---- Section Header ---- */
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.section-badge {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  border: 1px solid;
+}
+.see-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.see-all-btn:hover {
+  color: #00e687;
+}
+
+/* ---- Mini Promo Banners ---- */
+.mini-promo {
+  margin: 1rem 0;
+  padding: 0.8rem 1.2rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(26,108,241,0.1) 0%, rgba(0,230,135,0.1) 100%);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.mini-promo-alt {
+  background: linear-gradient(135deg, rgba(0,230,135,0.1) 0%, rgba(26,108,241,0.1) 100%);
+}
+
+/* ---- Ad Cards ---- */
+.ad-card {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #1a1f2e;
+  border: 1px solid rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ad-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0,230,135,0.2);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,230,135,0.1);
+}
+.ad-card-img {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: #151928;
+}
+.ad-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ad-card:hover .ad-card-img img {
+  transform: scale(1.08);
+}
+.ad-card-body {
+  padding: 0.8rem;
+}
+.ad-card-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.3;
+}
+.ad-card-price {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #00e687;
+  margin-top: 0.3rem;
+}
+.ad-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.35);
+}
+.ad-card-badge {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.4rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  z-index: 2;
+}
+.ad-card-fav {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.6rem;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  color: white;
+}
+.ad-card-fav:hover {
+  background: rgba(239,68,68,0.8);
+  transform: scale(1.1);
+}
+.ad-card-fav.active {
+  background: rgba(239,68,68,0.9);
+  color: white;
+}
+.ad-card-fav svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ---- Promo Cards (bigger) ---- */
+.promo-card {
+  position: relative;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  background: #1a1f2e;
+  border: 1px solid rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.promo-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(239,68,68,0.3);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(239,68,68,0.15);
+}
+.promo-card-img {
+  position: relative;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  background: #151928;
+}
+.promo-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.promo-card:hover .promo-card-img img {
+  transform: scale(1.08);
+}
+.promo-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+}
+.promo-card-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.2rem;
+}
+.promo-card-discount {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.5rem;
+  background: #ef4444;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+.promo-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+}
+.promo-card-price {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+}
+.promo-card-price .old {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.4);
+  text-decoration: line-through;
+}
+.promo-card-price .new {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #00e687;
+}
+
+/* ---- Modal ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+.modal-container {
+  position: relative;
+  width: 100%;
+  max-width: 56rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #1a1f2e;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.3s;
+}
+.modal-overlay.active .modal-container {
+  transform: translateY(0) scale(1);
+}
+.modal-container::-webkit-scrollbar { width: 6px; }
+.modal-container::-webkit-scrollbar-thumb { background: #2a3050; border-radius: 99px; }
+
+/* Specs table in modal */
+.specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.specs-table tr { border-bottom: 1px solid rgba(255,255,255,0.05); }
+.specs-table td { padding: 0.5rem 0; }
+.specs-table td:first-child { color: rgba(255,255,255,0.4); width: 40%; }
+.specs-table td:last-child { color: white; font-weight: 500; }
+
+/* Thumbnail active */
+.thumb-item {
+  aspect-ratio: 1;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  background: #151928;
+}
+.thumb-item:hover, .thumb-item.active {
+  border-color: #00e687;
+}
+.thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- Scroll Reveal ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- Card stagger animation ---- */
+.ad-card, .promo-card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: cardIn 0.5s ease forwards;
+}
+@keyframes cardIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Placeholder image styling ---- */
+.placeholder-img {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #1e2438 0%, #151928 100%);
+}
+
+/* ---- Select dark background ---- */
+select option {
+  background: #1a1f2e;
+  color: white;
+}
+
+/* ---- Data badge (Live / Démo) ---- */
+.data-badge { transition: opacity .3s; }
+.data-badge.live  { color: #00e687; }
+.data-badge.demo  { color: rgba(255,200,0,.8); }
+
+/* ---- Spinner (section loading) ---- */
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin .7s linear infinite; }
+
+/* ---- Responsive tweaks ---- */
+@media (max-width: 640px) {
+  .promo-card-title { font-size: 0.95rem; }
+  .ad-card-body { padding: 0.6rem; }
+  .ad-card-title { font-size: 0.75rem; }
+  .ad-card-price { font-size: 0.9rem; }
+  .modal-container { padding: 1rem; border-radius: 1rem; }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Tahiti Business Group",
+  "short_name": "TBG",
+  "description": "Annonces gratuites en Polynésie française. Véhicules, immobilier, électronique, emploi.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a6cf1",
+  "orientation": "portrait-primary",
+  "lang": "fr-PF",
+  "icons": [
+    {
+      "src": "/static/img/favicon-32.webp",
+      "sizes": "32x32",
+      "type": "image/webp"
+    },
+    {
+      "src": "/static/img/favicon-180.webp",
+      "sizes": "180x180",
+      "type": "image/webp"
+    },
+    {
+      "src": "/static/img/og-image.webp",
+      "sizes": "600x600",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ]
+}

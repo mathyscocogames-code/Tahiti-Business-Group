@@ -1,0 +1,180 @@
+import json
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from .forms import LoginForm, RegisterForm, ProfileForm
+from ads.models import Annonce, Message
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+
+    form = LoginForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password']
+        user = authenticate(request, email=email, password=password)
+        if user:
+            login(request, user)
+            messages.success(request, f"Bienvenue {user.nom or user.email} !")
+            return redirect(request.GET.get('next', 'index'))
+        else:
+            form.add_error(None, "Email ou mot de passe incorrect.")
+
+    return render(request, 'users/login.html', {'form': form})
+
+
+# Endpoint JSON pour login AJAX (compatible ancien frontend)
+@csrf_exempt
+@require_POST
+def api_login(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        data = {}
+    email = data.get('email', '')
+    password = data.get('password', '')
+    user = authenticate(request, email=email, password=password)
+    if user:
+        login(request, user)
+        return JsonResponse({
+            'success': True,
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'nom': user.nom,
+                'role': user.role,
+            }
+        })
+    return JsonResponse({'success': False, 'error': 'Identifiants incorrects'}, status=401)
+
+
+# Endpoint JSON pour register AJAX
+@csrf_exempt
+@require_POST
+def api_register(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'JSON invalide'}, status=400)
+
+    from .models import User
+    from django.contrib.auth.password_validation import validate_password
+    from django.core.exceptions import ValidationError
+
+    email = data.get('email', '').strip()
+    password = data.get('password', '')
+    nom = data.get('nom', '')
+    role = data.get('role', 'personnel')
+
+    if not email or not password:
+        return JsonResponse({'success': False, 'error': 'Email et mot de passe requis'}, status=400)
+    if User.objects.filter(email=email).exists():
+        return JsonResponse({'success': False, 'error': 'Email déjà utilisé'}, status=400)
+
+    user = User.objects.create_user(email=email, password=password, nom=nom, role=role)
+    login(request, user)
+    return JsonResponse({'success': True, 'user': {'id': user.id, 'email': user.email, 'role': user.role}})
+
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+
+    form = RegisterForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        user = form.save()
+        login(request, user)
+        messages.success(request, "Compte créé avec succès ! Bienvenue sur Tahiti Business Group.")
+        return redirect('index')
+
+    return render(request, 'users/register.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    messages.info(request, "Vous avez été déconnecté.")
+    return redirect('index')
+
+
+@login_required
+def mon_compte(request):
+    form = ProfileForm(request.POST or None, request.FILES or None, instance=request.user)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, "Profil mis à jour avec succès.")
+        return redirect('mon_compte')
+
+    annonces = Annonce.objects.filter(user=request.user).order_by('-created_at')
+    messages_recus = Message.objects.filter(
+        annonce__user=request.user
+    ).select_related('annonce').order_by('-created_at')[:10]
+
+    stats = {
+        'total': annonces.count(),
+        'actives': annonces.filter(statut='actif').count(),
+        'vendues': annonces.filter(statut='vendu').count(),
+        'vues': sum(a.views for a in annonces),
+        'messages': messages_recus.count(),
+    }
+
+    return render(request, 'users/mon_compte.html', {
+        'form': form,
+        'annonces': annonces[:6],
+        'messages_recus': messages_recus,
+        'stats': stats,
+    })
+
+
+@login_required
+def admin_dashboard(request):
+    if not request.user.is_staff:
+        messages.error(request, "Accès refusé.")
+        return redirect('index')
+
+    from pubs.models import Publicite, DemandePublicite
+    from .models import User
+
+    stats = {
+        'annonces_total': Annonce.objects.count(),
+        'annonces_actives': Annonce.objects.filter(statut='actif').count(),
+        'annonces_moderees': Annonce.objects.filter(statut='modere').count(),
+        'users_total': User.objects.count(),
+        'pubs_actives': Publicite.objects.filter(actif=True).count(),
+        'demandes_pubs': DemandePublicite.objects.filter(traite=False).count(),
+    }
+
+    annonces_recentes = Annonce.objects.select_related('user').order_by('-created_at')[:20]
+    demandes_pubs = DemandePublicite.objects.filter(traite=False).order_by('-created_at')
+    pubs = Publicite.objects.all()
+
+    return render(request, 'users/admin_dashboard.html', {
+        'stats': stats,
+        'annonces_recentes': annonces_recentes,
+        'demandes_pubs': demandes_pubs,
+        'pubs': pubs,
+    })
+
+
+@login_required
+def moderer_annonce(request, pk):
+    if not request.user.is_staff:
+        return redirect('index')
+    annonce = Annonce.objects.get(pk=pk)
+    action = request.POST.get('action')
+    if action == 'approuver':
+        annonce.statut = 'actif'
+    elif action == 'moderer':
+        annonce.statut = 'modere'
+    elif action == 'supprimer':
+        annonce.delete()
+        messages.success(request, "Annonce supprimée.")
+        return redirect('admin_dashboard')
+    annonce.save()
+    messages.success(request, f"Annonce {action}e.")
+    return redirect('admin_dashboard')

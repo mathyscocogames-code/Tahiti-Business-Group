@@ -1,0 +1,49 @@
+{% load static %}
+<!-- Annonce header -->
+<div class="flex gap-3 mb-4">
+  {% if annonce.get_main_photo %}
+  <img src="{{ annonce.get_main_photo }}" class="w-14 h-14 object-cover rounded-xl flex-shrink-0 border border-gray-200" alt="">
+  {% else %}
+  <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-2xl flex-shrink-0">
+    {% if annonce.categorie == 'vehicules' %}🚗{% elif annonce.categorie == 'immobilier' %}🏠{% elif annonce.categorie == 'electronique' %}📱{% elif annonce.categorie == 'emploi' %}💼{% elif annonce.categorie == 'services' %}🔧{% else %}📦{% endif %}
+  </div>
+  {% endif %}
+  <div class="min-w-0">
+    <div class="font-bold text-gray-900 text-sm line-clamp-2 leading-tight">{{ annonce.titre }}</div>
+    <div class="text-blue-600 font-bold text-sm mt-0.5">{{ annonce.get_prix_display_label }}</div>
+    <div class="text-xs text-gray-400 truncate">📍 {{ annonce.localisation }} · {{ annonce.user.nom|default:annonce.user.email }}</div>
+  </div>
+</div>
+
+<hr class="border-gray-100 mb-3">
+
+<!-- Conversation thread -->
+<div class="chat-thread" id="chatThread">
+  {% if thread %}
+    {% for msg in thread %}
+    <div class="chat-bubble {% if msg.from_user == request.user %}chat-bubble--me{% else %}chat-bubble--other{% endif %}">
+      <div class="chat-bubble__text">{{ msg.content }}</div>
+      <div class="chat-bubble__time">{{ msg.created_at|date:"d/m H:i" }}</div>
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="text-center py-6 text-gray-400 text-sm">
+    <div class="text-4xl mb-2">💬</div>
+    Démarrez la conversation avec le vendeur
+  </div>
+  {% endif %}
+</div>
+
+<!-- Send form -->
+<form id="contactForm" data-url="{% url 'contact_annonce' pk=annonce.pk %}" class="mt-3 flex gap-2 items-end">
+  {% csrf_token %}
+  <textarea name="content" id="contactContent" class="form-input flex-1 text-sm"
+    rows="2" placeholder="Votre message…" required style="resize:none; min-height:60px"></textarea>
+  <button type="submit"
+    class="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-2.5 transition flex items-center justify-center"
+    title="Envoyer">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+    </svg>
+  </button>
+</form>

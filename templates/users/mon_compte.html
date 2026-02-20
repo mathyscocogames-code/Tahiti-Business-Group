@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Mon compte{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+
+  <div class="flex items-center gap-4 mb-8">
+    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-2xl font-bold">
+      {{ user.nom|first|upper|default:user.email|first|upper }}
+    </div>
+    <div>
+      <h1 class="text-2xl font-bold">{{ user.nom|default:"Mon compte" }}</h1>
+      <div class="text-muted text-sm">{{ user.email }} • {{ user.get_role_display }}</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
+    <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-white">{{ stats.total }}</div>
+      <div class="text-xs text-muted mt-1">Annonces</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-accent">{{ stats.actives }}</div>
+      <div class="text-xs text-muted mt-1">Actives</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-primary">{{ stats.vendues }}</div>
+      <div class="text-xs text-muted mt-1">Vendues</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-white">{{ stats.vues }}</div>
+      <div class="text-xs text-muted mt-1">Vues totales</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-yellow-400">{{ stats.messages }}</div>
+      <div class="text-xs text-muted mt-1">Messages</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Profil -->
+    <div class="lg:col-span-1">
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <h2 class="font-bold text-lg mb-4">Mon profil</h2>
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
+          {% csrf_token %}
+          <div>
+            <label class="block text-sm text-muted mb-1">{{ form.nom.label }}</label>
+            {{ form.nom }}
+          </div>
+          <div>
+            <label class="block text-sm text-muted mb-1">{{ form.tel.label }}</label>
+            {{ form.tel }}
+          </div>
+          <div>
+            <label class="block text-sm text-muted mb-1">{{ form.whatsapp.label }}</label>
+            {{ form.whatsapp }}
+          </div>
+          <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white font-semibold py-2.5 rounded-xl transition text-sm">
+            Sauvegarder
+          </button>
+        </form>
+        <div class="mt-4 pt-4 border-t border-border">
+          <div class="text-xs text-muted">Email du compte</div>
+          <div class="text-sm font-medium mt-0.5 truncate">{{ user.email }}</div>
+        </div>
+        {% if user.is_staff %}
+        <a href="{% url 'admin_dashboard' %}" class="mt-4 flex items-center justify-center gap-2 w-full bg-accent/10 hover:bg-accent/20 text-accent border border-accent/20 font-semibold py-2.5 rounded-xl transition text-sm">
+          Dashboard Admin
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Annonces + Messages -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <!-- Mes annonces récentes -->
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-lg">Mes annonces récentes</h2>
+          <a href="{% url 'mes_annonces' %}" class="text-sm text-primary hover:text-accent transition">Voir tout →</a>
+        </div>
+        {% if annonces %}
+        <div class="space-y-3">
+          {% for annonce in annonces %}
+          <div class="flex items-center gap-3 p-3 bg-dark rounded-xl">
+            <div class="w-12 h-10 bg-border rounded-lg overflow-hidden flex-shrink-0">
+              {% if annonce.get_main_photo %}
+              <img src="{{ annonce.get_main_photo }}" class="w-full h-full object-cover">
+              {% else %}
+              <div class="w-full h-full flex items-center justify-center text-sm">
+                {% if annonce.categorie == 'vehicules' %}🚗{% elif annonce.categorie == 'immobilier' %}🏠{% elif annonce.categorie == 'electronique' %}📱{% else %}📦{% endif %}
+              </div>
+              {% endif %}
+            </div>
+            <div class="flex-1 min-w-0">
+              <a href="{% url 'annonce_detail' annonce.pk %}" class="text-sm font-medium hover:text-accent transition truncate block">
+                {{ annonce.titre }}
+              </a>
+              <div class="text-xs text-muted">{{ annonce.views }} vues • {{ annonce.created_at|date:"d/m/Y" }}</div>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded-full
+              {% if annonce.statut == 'actif' %}bg-green-900/50 text-green-400
+              {% elif annonce.statut == 'vendu' %}bg-gray-800 text-gray-400
+              {% else %}bg-yellow-900/50 text-yellow-400{% endif %}">
+              {{ annonce.get_statut_display }}
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-muted">
+          <div class="text-4xl mb-2">📭</div>
+          <p class="text-sm">Aucune annonce</p>
+          <a href="{% url 'deposer_annonce' %}" class="mt-3 inline-block text-xs bg-accent text-dark font-bold px-4 py-2 rounded-lg hover:bg-green-400 transition">
+            Déposer une annonce
+          </a>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Messages reçus -->
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <h2 class="font-bold text-lg mb-4">Messages reçus</h2>
+        {% if messages_recus %}
+        <div class="space-y-3">
+          {% for msg in messages_recus %}
+          <div class="p-3 bg-dark rounded-xl {% if not msg.lu %}border border-primary/30{% endif %}">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm font-medium">{{ msg.contact_nom|default:"Anonyme" }}</span>
+              <span class="text-xs text-muted">{{ msg.created_at|date:"d/m H:i" }}</span>
+            </div>
+            <div class="text-xs text-muted mb-1">Pour : {{ msg.annonce.titre|truncatechars:40 }}</div>
+            <div class="text-sm text-muted">{{ msg.contenu|truncatechars:100 }}</div>
+            {% if msg.contact_tel %}
+            <div class="text-xs text-accent mt-1">📞 {{ msg.contact_tel }}</div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-muted">
+          <div class="text-4xl mb-2">💬</div>
+          <p class="text-sm">Aucun message reçu</p>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
