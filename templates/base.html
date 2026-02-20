@@ -365,7 +365,9 @@
 </div>
 {% endif %}
 
-<!-- ═══ PUB ARRIÈRE-PLAN FIXE PLEINE PAGE (toutes pages) ═══ -->
+<!-- ═══ PUB ARRIÈRE-PLAN FIXE PLEINE PAGE (index + liste uniquement) ═══ -->
+{% with url=request.resolver_match.url_name %}
+{% if url != 'deposer_annonce' and url != 'mes_favoris' and url != 'mes_messages' and url != 'mon_compte' and url != 'edit_annonce' and url != 'login' and url != 'register' %}
 <div class="pub-bg-fixed">
   {% if pub_billboard %}
   <a href="{{ pub_billboard.lien }}" target="_blank" rel="noopener sponsored" class="pub-bg-fixed-link">
@@ -379,6 +381,8 @@
   </a>
   {% endif %}
 </div>
+{% endif %}
+{% endwith %}
 
 {% block pub_spacer %}{% endblock %}
 <main>{% block content %}{% endblock %}</main>
