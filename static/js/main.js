@@ -182,7 +182,9 @@ function initFormSpinners() {
   document.querySelectorAll('form').forEach(form => {
     const btn = form.querySelector('button[type="submit"]');
     if (!btn || btn.dataset.noSpinner) return;
-    form.addEventListener('submit', function() {
+    form.addEventListener('submit', function(e) {
+      // Si le submit a été annulé (ex: confirm() → Annuler), ne rien faire
+      if (e.defaultPrevented) return;
       if (!form.checkValidity()) return;
       const orig = btn.innerHTML;
       btn.disabled = true;
