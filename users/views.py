@@ -18,7 +18,7 @@ def login_view(request):
     if request.method == 'POST' and form.is_valid():
         email = form.cleaned_data['email']
         password = form.cleaned_data['password']
-        user = authenticate(request, email=email, password=password)
+        user = authenticate(request, username=email, password=password)
         if user:
             login(request, user)
             messages.success(request, f"Bienvenue {user.nom or user.email} !")
@@ -39,7 +39,7 @@ def api_login(request):
         data = {}
     email = data.get('email', '')
     password = data.get('password', '')
-    user = authenticate(request, email=email, password=password)
+    user = authenticate(request, username=email, password=password)
     if user:
         login(request, user)
         return JsonResponse({
