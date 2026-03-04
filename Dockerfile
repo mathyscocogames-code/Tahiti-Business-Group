@@ -13,8 +13,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # Code source
 COPY . .
 
-# Fichiers statiques
-RUN python manage.py collectstatic --noinput
+# Fichiers statiques (DEBUG=True pour éviter l'erreur ALLOWED_HOSTS au build)
+RUN DEBUG=True python manage.py collectstatic --noinput
 
 EXPOSE 8000
 

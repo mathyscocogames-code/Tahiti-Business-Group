@@ -10,10 +10,15 @@ SECRET_KEY = os.environ.get(
     'django-tahiti-business-2026-super-secret-key-production'
 )
 
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# En l'absence de DATABASE_URL on est en local (SQLite)
+_local = not os.environ.get('DATABASE_URL')
+
+DEBUG = os.environ.get('DEBUG', 'True' if _local else 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS if h.strip()]
+if _local and not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in CSRF_TRUSTED_ORIGINS if o.strip()]
