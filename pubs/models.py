@@ -11,9 +11,9 @@ EMPLACEMENTS = [
     ("strip_1",   "Strip 1 - Apres Promos (8 000 XPF/mois)"),
     ("strip_2",   "Strip 2 - Milieu page (8 000 XPF/mois)"),
     ("strip_3",   "Strip 3 - Fin de page (8 000 XPF/mois)"),
-    ("haut",      "Sidebar Haut (10 000 XPF/mois)"),
-    ("milieu",    "Sidebar Milieu (7 000 XPF/mois)"),
-    ("bas",       "Sidebar Bas (5 000 XPF/mois)"),
+    ("haut",      "Sidebar Haut (60 000 XPF/mois)"),
+    ("milieu",    "Sidebar Milieu (40 000 XPF/mois)"),
+    ("bas",       "Sidebar Bas (20 000 XPF/mois)"),
 ]
 
 PRIX_PAR_EMPLACEMENT = {
@@ -21,9 +21,9 @@ PRIX_PAR_EMPLACEMENT = {
     "strip_1":    8000,
     "strip_2":    8000,
     "strip_3":    8000,
-    "haut":      10000,
-    "milieu":     7000,
-    "bas":        5000,
+    "haut":      60000,
+    "milieu":    40000,
+    "bas":       20000,
 }
 
 # Dimensions cibles (w × h) par emplacement — crop centré via ImageOps.fit
