@@ -56,6 +56,7 @@
   </a>
   {% else %}
   <a href="{% url 'tarifs_pubs' %}" class="pub-bg-fixed-empty">
+    <canvas class="pub-space-canvas"></canvas>
     <div style="color:#fff;font-size:clamp(20px,4vw,48px);font-weight:900;letter-spacing:-.02em;text-align:center">📢 VOTRE PUB ICI</div>
     <div style="color:rgba(255,255,255,.9);font-size:clamp(14px,2.5vw,28px);font-weight:700">100 000 XPF / mois</div>
     <div style="color:rgba(255,255,255,.7);font-size:clamp(12px,1.5vw,18px);font-weight:600;text-decoration:underline">Réserver → 89 61 06 13</div>
@@ -698,6 +699,50 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeContact
   </a>
 </div>
 {% endif %}
+
+<script>
+/* ── Animation fond spatial (étoiles) pour les emplacements pub vides ── */
+(function () {
+  'use strict';
+  function initStars(canvas) {
+    var ctx = canvas.getContext('2d');
+    var w, h, stars = [];
+    function resize() {
+      w = canvas.width  = canvas.offsetWidth  || 200;
+      h = canvas.height = canvas.offsetHeight || 80;
+      stars = [];
+      var n = Math.max(18, Math.floor(w * h / 550));
+      for (var i = 0; i < n; i++) {
+        stars.push({
+          x:       Math.random() * w,
+          y:       Math.random() * h,
+          r:       Math.random() * 1.3 + 0.2,
+          speed:   Math.random() * 0.38 + 0.07,
+          opacity: Math.random() * 0.65 + 0.25
+        });
+      }
+    }
+    function frame() {
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(255,255,255,' + s.opacity + ')';
+        ctx.fill();
+        s.y += s.speed;
+        if (s.y > h) { s.y = 0; s.x = Math.random() * w; }
+      }
+      requestAnimationFrame(frame);
+    }
+    resize();
+    frame();
+    window.addEventListener('resize', resize);
+  }
+  var canvases = document.querySelectorAll('.pub-space-canvas');
+  for (var i = 0; i < canvases.length; i++) { initStars(canvases[i]); }
+})();
+</script>
 
 </body>
 </html>

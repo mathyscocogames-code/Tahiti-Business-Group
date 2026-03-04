@@ -222,6 +222,9 @@ textarea.form-input       { resize: vertical; min-height: 100px; }
   text-align: center;
   padding: 24px 16px;
   min-height: 160px;
+  position: relative;
+  overflow: hidden;
+  background: #000;
 }
 .pub-empty__icon { font-size: 2rem; margin-bottom: 8px; }
 .pub-empty__title { font-weight: 700; font-size: 14px; color: var(--text); }
@@ -240,6 +243,21 @@ textarea.form-input       { resize: vertical; min-height: 100px; }
   transition: background .2s;
 }
 .pub-empty__cta:hover { background: var(--primary-h); }
+.pub-bg-fixed-empty > :not(.pub-space-canvas) { position: relative; z-index: 1; }
+
+/* ── Fond spatial (canvas étoiles) dans les emplacements pub vides ─── */
+.pub-space-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.pub-empty__icon,
+.pub-empty__title,
+.pub-empty__price,
+.pub-empty__sub,
+.pub-empty__cta { position: relative; z-index: 1; }
 
 /* ── Billboard (header pub, full width) ──────────────────────── */
 .billboard-wrap {
@@ -318,7 +336,7 @@ textarea.form-input       { resize: vertical; min-height: 100px; }
   align-items: center;
   justify-content: center;
   gap: 16px;
-  background: linear-gradient(135deg, #1e3a8a 0%, #1a6cf1 60%, #0ea5e9 100%);
+  background: #000;
   text-decoration: none;
   cursor: pointer;
   pointer-events: auto;
@@ -933,7 +951,7 @@ img.loaded     { opacity: 1; }
   align-items: center;
   width: 100%;
   height: 64px;
-  background: linear-gradient(135deg, #e61920 0%, #b0121b 100%);
+  background: #000;
   border-radius: var(--radius);
   text-decoration: none;
   overflow: hidden;
@@ -943,14 +961,10 @@ img.loaded     { opacity: 1; }
 @media (min-width: 640px)  { .billboard-milieu-empty { height: 72px; } }
 @media (min-width: 1024px) { .billboard-milieu-empty { height: 80px; } }
 .billboard-milieu-empty:hover { opacity: .93; }
-.billboard-milieu-empty::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,.04) 40px, rgba(255,255,255,.04) 80px);
-}
+.billboard-milieu-empty::before { content: none; }
 .billboard-milieu-empty__inner {
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 12px;
