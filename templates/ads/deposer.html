@@ -113,8 +113,8 @@
                 {% endif %}
               </label>
 
-              <!-- Panel options (max-height animé) -->
-              <div id="bst-panel" class="bst-panel" aria-hidden="true">
+              <!-- Panel options -->
+              <div id="bst-panel" class="bst-panel" style="display:none">
                 <div class="bst-panel__inner">
                   <p class="bst-panel__hint">Ton annonce passera en tête de liste dès la publication.</p>
 
@@ -129,7 +129,7 @@
                   </div>
 
                   <!-- Textarea (7j / 1mois uniquement) -->
-                  <div id="bst-msg" class="bst-msg" aria-hidden="true">
+                  <div id="bst-msg" class="bst-msg" style="display:none">
                     <textarea name="boost_demande" id="bst-textarea" class="bst-textarea" disabled rows="3"
                       placeholder="Explique-nous pourquoi tu souhaites booster ton annonce..."></textarea>
                     <p class="bst-msg__hint">Notre équipe te contactera pour valider et encaisser le paiement.</p>
@@ -309,30 +309,23 @@
   flex-shrink: 0;
 }
 
-/* Panel options — animé via max-height */
+/* Panel options */
 .bst-panel {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transform: translateY(-6px);
-  transition: max-height .35s ease, opacity .3s ease, transform .3s ease;
-  pointer-events: none;
-}
-.bst-panel--open {
-  max-height: 440px;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+  border-top: 1px solid #e5e7eb;
+  animation: bst-slidein .3s ease;
 }
 .bst-panel__inner {
   padding: 14px 18px 18px;
-  border-top: 1px solid #e5e7eb;
 }
 .bst-panel__hint {
   font-size: 12px;
   color: #6b7280;
   margin-bottom: 14px;
   font-style: italic;
+}
+@keyframes bst-slidein {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Champ select */
@@ -373,21 +366,10 @@
   background-color: #f3f4f6;
 }
 
-/* Textarea payant — animé via max-height */
+/* Textarea payant */
 .bst-msg {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transform: translateY(-4px);
-  transition: max-height .3s ease, opacity .25s ease, transform .25s ease;
-  pointer-events: none;
-}
-.bst-msg--open {
-  max-height: 200px;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
   margin-top: 14px;
+  animation: bst-slidein .25s ease;
 }
 .bst-textarea {
   width: 100%;
@@ -792,14 +774,14 @@ function previewPhotos(input) {
 
   function syncMsg(forceClose) {
     var paid = !forceClose && select && ['7jours', '1mois'].includes(select.value);
-    if (msgBox)   { msgBox.classList.toggle('bst-msg--open', !!paid); msgBox.setAttribute('aria-hidden', !paid); }
+    if (msgBox)   msgBox.style.display   = paid ? '' : 'none';
     if (textarea) { textarea.disabled = !paid; textarea.required = !!paid; }
   }
 
   function syncPanel() {
     var on = cb.checked;
-    if (panel)  { panel.classList.toggle('bst-panel--open', on); panel.setAttribute('aria-hidden', !on); }
-    if (flame)  { flame.classList.toggle('bst-flame--on', on); }
+    if (panel)  panel.style.display  = on ? '' : 'none';
+    if (flame)  flame.classList.toggle('bst-flame--on', on);
     if (select) { select.disabled = !on; if (!on) select.value = ''; }
     syncMsg(!on);
   }
