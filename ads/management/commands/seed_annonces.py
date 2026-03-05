@@ -10,6 +10,19 @@ from ads.models import Annonce
 
 User = get_user_model()
 
+def _p(seed):
+    return f"https://picsum.photos/seed/{seed}/900/600"
+
+# Photos par catégorie (picsum seeds stables)
+CAT_PHOTOS = {
+    'vehicules':    [_p('car1'), _p('suv2'), _p('truck3'), _p('road4')],
+    'immobilier':   [_p('house1'), _p('villa2'), _p('room3'), _p('building4')],
+    'electronique': [_p('phone1'), _p('laptop2'), _p('tech3'), _p('gadget4')],
+    'emploi':       [_p('office1'), _p('work2'), _p('meeting3'), _p('desk4')],
+    'services':     [_p('tools1'), _p('repair2'), _p('service3'), _p('help4')],
+    'autres':       [_p('market1'), _p('sport2'), _p('furniture3'), _p('goods4')],
+}
+
 LOCALISATIONS = [
     'Papeete', 'Faa\'a', 'Punaauia', 'Pirae', 'Arue', 'Mahina',
     'Papara', 'Moorea', 'Taravao', 'Paea', 'Bora Bora', 'Raiatea',
@@ -350,6 +363,10 @@ class Command(BaseCommand):
                 if Annonce.objects.filter(titre=titre_seed).exists():
                     continue
 
+                photos_pool = CAT_PHOTOS.get(categorie, CAT_PHOTOS['autres'])
+                nb = random.randint(1, 3)
+                photos = [photos_pool[j % len(photos_pool)] for j in range(i, i + nb)]
+
                 Annonce.objects.create(
                     user=user,
                     titre=titre_seed,
@@ -360,6 +377,7 @@ class Command(BaseCommand):
                     sous_categorie=a.get('sous', ''),
                     localisation=locs[i % len(locs)],
                     statut='actif',
+                    photos=photos,
                     views=random.randint(0, 200),
                 )
                 total += 1
