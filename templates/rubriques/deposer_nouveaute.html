@@ -28,7 +28,7 @@
   {% endfor %}
   {% endif %}
 
-  <form method="post" class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-5">
+  <form method="post" enctype="multipart/form-data" class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-5">
     {% csrf_token %}
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-1.5" for="titre">
@@ -54,6 +54,14 @@
              placeholder="https://votre-site.pf ou page Facebook/Instagram"
              class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
       <p class="text-xs text-gray-400 mt-1">Site web, page réseaux sociaux ou fiche Google Maps.</p>
+    </div>
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+        Photo (optionnel)
+      </label>
+      <input type="file" name="photo" accept="image/*"
+             class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer">
+      <p class="text-xs text-gray-400 mt-1">JPG, PNG ou WebP — max 5 Mo. Convertie automatiquement en WebP.</p>
     </div>
     <button type="submit"
             class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition text-sm">

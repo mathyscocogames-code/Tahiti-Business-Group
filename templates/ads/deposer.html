@@ -97,36 +97,39 @@
             <!-- ── Module Boost ───────────────────────────────────────── -->
             {% if user.is_authenticated %}
             <div id="boost-wrap">
-
-              <!-- Ligne principale -->
-              <div id="boost-row" onclick="boostToggle()">
-                <input type="checkbox" id="boost-cb" onchange="boostToggle()" onclick="event.stopPropagation()">
-                <span id="boost-flame">🔥</span>
-                <span id="boost-title">Booster mon annonce</span>
-                {% if can_free_boost %}
-                <span id="boost-free-badge">1<sup>er</sup> boost gratuit ✨</span>
-                {% endif %}
+              <div id="boost-header">
+                <span id="boost-flame-display">💤</span>
+                <div id="boost-header-text">
+                  <span id="boost-title">Booster mon annonce</span>
+                  <span id="boost-subtitle">Passe en tête de liste</span>
+                </div>
+                <span id="boost-badge"></span>
               </div>
 
-              <!-- Panel déroulant (caché par défaut) -->
-              <div id="boost-panel">
-                <p id="boost-hint">Ton annonce passera en tête de liste dès la publication.</p>
-
-                <label id="boost-dur-label">Durée du boost</label>
-                <select name="boost_duree" id="boost-select" onchange="boostDurationChange(this)">
-                  <option value="">— Choisir une durée —</option>
-                  <option value="1jour"{% if not can_free_boost %} disabled{% endif %}>🎁 1 jour — Gratuit{% if not can_free_boost %} (déjà utilisé){% endif %}</option>
-                  <option value="7jours">7 jours — Payant</option>
-                  <option value="1mois">1 mois — Payant</option>
-                </select>
-
-                <!-- Textarea uniquement pour 7j / 1mois -->
-                <div id="boost-msg">
-                  <textarea name="boost_demande" id="boost-textarea" rows="3"
-                    placeholder="Explique-nous pourquoi tu souhaites booster ton annonce..."></textarea>
-                  <p id="boost-msg-hint">Notre équipe te contactera pour valider et encaisser le paiement.</p>
+              <div id="boost-slider-zone">
+                <input type="range" id="boost-slider" min="0" max="2" step="1" value="0" oninput="boostUpdate(parseInt(this.value))">
+                <div id="boost-labels">
+                  <span class="boost-lbl" data-pos="0">Pas de boost</span>
+                  <span class="boost-lbl" data-pos="1">7 jours</span>
+                  <span class="boost-lbl" data-pos="2">1 mois</span>
                 </div>
+              </div>
 
+              <!-- Input caché soumis avec le formulaire -->
+              <input type="hidden" name="boost_duree" id="boost-duree-hidden" value="">
+
+              <!-- Estimation de vues -->
+              <div id="boost-estimate" style="display:none">
+                <span id="boost-estimate-icon">👁</span>
+                <span id="boost-estimate-text"></span>
+              </div>
+
+              <!-- Textarea visible uniquement si boost sélectionné -->
+              <div id="boost-msg" style="display:none">
+                <p id="boost-msg-label">Message pour notre équipe <span style="color:#ef4444">*</span></p>
+                <textarea name="boost_demande" id="boost-textarea" rows="3"
+                  placeholder="Décris ton annonce en quelques mots pour que notre équipe puisse la mettre en avant..."></textarea>
+                <p id="boost-msg-hint">Notre équipe te contactera pour valider et encaisser le paiement.</p>
               </div>
             </div>
             {% endif %}
@@ -197,93 +200,111 @@
   margin-left: 4px;
 }
 
-/* ══ MODULE BOOST ══════════════════════════════════════════════ */
+/* ══ MODULE BOOST — SLIDER ═════════════════════════════════════ */
 #boost-wrap {
   border: 1.5px solid #e5e7eb;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   background: #fff;
+  transition: border-color .3s, box-shadow .3s;
 }
-#boost-row {
+#boost-wrap.boost-active {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249,115,22,.12);
+}
+#boost-wrap.boost-max {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239,68,68,.15);
+}
+
+/* Header */
+#boost-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 18px;
-  background: #f9fafb;
-  cursor: pointer;
-  user-select: none;
+  gap: 12px;
+  padding: 16px 20px 12px;
 }
-#boost-row:hover { background: #f3f4f6; }
-#boost-cb {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: #111827;
-  flex-shrink: 0;
+#boost-flame-display {
+  font-size: 2.2rem;
+  line-height: 1;
+  display: block;
+  transform-origin: bottom center;
+  transition: font-size .3s ease, filter .3s ease;
 }
-#boost-flame {
-  font-size: 16px;
-  opacity: 0;
-  transition: opacity .25s;
-}
+#boost-header-text { flex: 1; }
 #boost-title {
+  display: block;
   font-size: 14px;
   font-weight: 700;
   color: #111827;
-  flex: 1;
 }
-#boost-free-badge {
+#boost-subtitle {
+  display: block;
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 1px;
+}
+#boost-badge {
   font-size: 11px;
   font-weight: 700;
-  color: #065f46;
-  background: #d1fae5;
-  padding: 3px 9px;
+  padding: 3px 10px;
   border-radius: 20px;
-  white-space: nowrap;
+  transition: background .3s, color .3s;
 }
-#boost-panel {
-  display: none;
-  border-top: 1px solid #e5e7eb;
-  padding: 14px 18px 18px;
-  animation: boost-in .2s ease;
+
+/* Slider zone */
+#boost-slider-zone {
+  padding: 4px 20px 16px;
 }
-@keyframes boost-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-#boost-hint {
-  font-size: 12px;
-  color: #6b7280;
-  font-style: italic;
-  margin-bottom: 12px;
-}
-#boost-dur-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 700;
-  color: #374151;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  margin-bottom: 6px;
-}
-#boost-select {
-  display: block;
+#boost-slider {
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
-  padding: 9px 12px;
-  font-size: 13px;
-  font-family: inherit;
-  font-weight: 500;
-  color: #111827;
-  border: 1.5px solid #d1d5db;
-  border-radius: 8px;
-  background: #fff;
+  height: 6px;
+  border-radius: 4px;
+  background: #e5e7eb;
+  outline: none;
   cursor: pointer;
+  transition: background .3s;
 }
-#boost-select:focus { outline: none; border-color: #111827; }
-#boost-msg {
-  display: none;
-  margin-top: 14px;
+#boost-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #111827;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 6px rgba(0,0,0,.25);
+  transition: background .3s, transform .2s;
 }
+#boost-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+#boost-slider::-moz-range-thumb {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: #111827;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 6px rgba(0,0,0,.25);
+}
+
+/* Labels sous le slider */
+#boost-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.boost-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  transition: color .25s, font-weight .25s;
+}
+.boost-lbl.active { color: #111827; font-weight: 800; }
+
+/* Textarea */
+#boost-msg { padding: 0 20px 16px; }
 #boost-textarea {
   width: 100%;
   padding: 10px 12px;
@@ -301,6 +322,63 @@
   color: #92400e;
   margin-top: 6px;
   font-style: italic;
+}
+
+/* Animation flamme */
+@keyframes flicker {
+  0%,100% { transform: scaleY(1)    rotate(-1deg); }
+  25%      { transform: scaleY(1.1)  rotate(1.5deg); }
+  50%      { transform: scaleY(.93)  rotate(-2deg); }
+  75%      { transform: scaleY(1.06) rotate(2deg); }
+}
+@keyframes flicker-big {
+  0%,100% { transform: scaleY(1)    rotate(-2deg); }
+  20%      { transform: scaleY(1.15) rotate(2deg); }
+  40%      { transform: scaleY(.9)   rotate(-3deg); }
+  60%      { transform: scaleY(1.12) rotate(3deg); }
+  80%      { transform: scaleY(.88)  rotate(-2deg); }
+}
+.flame-mid {
+  font-size: 2.6rem;
+  animation: flicker 1s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(249,115,22,.7));
+}
+.flame-max {
+  font-size: 3.2rem;
+  animation: flicker-big .55s ease-in-out infinite;
+  filter: drop-shadow(0 0 14px rgba(239,68,68,.9));
+}
+
+/* Estimation de vues */
+#boost-estimate {
+  margin: 0 20px 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #166534;
+  animation: boost-in .2s ease;
+}
+#boost-estimate-icon { font-size: 15px; }
+#boost-estimate.estimate-big {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #9a3412;
+}
+
+/* Label textarea */
+#boost-msg-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #374151;
+  margin-bottom: 6px;
 }
 
 </style>
@@ -554,6 +632,13 @@ const SPECS_DEF = {
     { name: 'marque',     label: 'Marque',        type: 'text',   placeholder: 'Ex: Chicco, Babymoov…' },
     { name: 'etat',       label: 'État',          type: 'select', options: ['Neuf','Très bon','Bon','Passable'] },
   ],
+  'autres-jeux': [
+    { name: 'age_min',   label: 'Âge minimum',   type: 'select', options: ['0-2 ans','3-5 ans','6-9 ans','10-14 ans','15+ ans','Tout âge'] },
+    { name: 'type_jeu',  label: 'Type',           type: 'select', options: ['Jeu de société','Figurine / Lego','Jeu électronique','Jeu de plein air','Peluche','Puzzle','Autre'] },
+    { name: 'marque',    label: 'Marque',         type: 'text',   placeholder: 'Ex: Lego, Hasbro, Mattel…' },
+    { name: 'complet',   label: 'Complet (toutes pièces)', type: 'checkbox' },
+    { name: 'etat',      label: 'État',           type: 'select', options: ['Neuf','Très bon','Bon','Passable'] },
+  ],
 };
 
 // ─── Emploi : champs spécifiques par sous-catégorie ──────────────────────────
@@ -668,37 +753,54 @@ function previewPhotos(input) {
   });
 }
 
-// ─── Boost ────────────────────────────────────────────────────────────────────
-function boostToggle() {
-  var cb    = document.getElementById('boost-cb');
-  var panel = document.getElementById('boost-panel');
-  var sel   = document.getElementById('boost-select');
-  var msg   = document.getElementById('boost-msg');
-  var flame = document.getElementById('boost-flame');
-  if (!cb || !panel) return;
-  if (cb.checked) {
-    panel.style.display = 'block';
-    if (flame) flame.style.opacity = '1';
-  } else {
-    panel.style.display = 'none';
-    if (sel)   sel.value = '';
-    if (msg)   msg.style.display = 'none';
-    if (flame) flame.style.opacity = '0';
+// ─── Boost Slider ─────────────────────────────────────────────────────────────
+function boostUpdate(pos) {
+  var hidden   = document.getElementById('boost-duree-hidden');
+  var flame    = document.getElementById('boost-flame-display');
+  var wrap     = document.getElementById('boost-wrap');
+  var badge    = document.getElementById('boost-badge');
+  var msg      = document.getElementById('boost-msg');
+  var estimate = document.getElementById('boost-estimate');
+  var estimTxt = document.getElementById('boost-estimate-text');
+  var slider   = document.getElementById('boost-slider');
+  var lbls     = document.querySelectorAll('.boost-lbl');
+
+  if (pos === 0) {
+    if (hidden)   hidden.value           = '';
+    if (flame)  { flame.textContent      = '\uD83D\uDCA4'; flame.style.fontSize = '2.2rem'; flame.style.animation = 'none'; flame.style.filter = ''; }
+    if (wrap)   { wrap.style.borderColor = '#e5e7eb'; wrap.style.boxShadow = ''; }
+    if (badge)  { badge.textContent      = ''; badge.style.background = ''; badge.style.color = ''; }
+    if (slider)   slider.style.background = '#e5e7eb';
+    if (estimate) estimate.style.display  = 'none';
+    if (msg)      msg.style.display       = 'none';
+
+  } else if (pos === 1) {
+    if (hidden)   hidden.value           = '7jours';
+    if (flame)  { flame.textContent      = '\uD83D\uDD25'; flame.style.fontSize = '2.6rem'; flame.style.animation = 'flicker 1s ease-in-out infinite'; flame.style.filter = 'drop-shadow(0 0 6px rgba(249,115,22,.7))'; }
+    if (wrap)   { wrap.style.borderColor = '#f97316'; wrap.style.boxShadow = '0 0 0 3px rgba(249,115,22,.12)'; }
+    if (badge)  { badge.textContent      = '7 jours'; badge.style.background = '#fff7ed'; badge.style.color = '#c2410c'; }
+    if (slider)   slider.style.background = 'linear-gradient(to right,#f97316 50%,#e5e7eb 50%)';
+    if (estimate) { estimate.style.display = 'flex'; estimate.style.background = '#f0fdf4'; estimate.style.borderColor = '#bbf7d0'; estimate.style.color = '#166534'; }
+    if (estimTxt) estimTxt.textContent   = 'Estimé : +800 à 1 500 vues supplémentaires en 7 jours';
+    if (msg)      msg.style.display      = 'block';
+
+  } else if (pos === 2) {
+    if (hidden)   hidden.value           = '1mois';
+    if (flame)  { flame.textContent      = '\uD83D\uDD25'; flame.style.fontSize = '3.2rem'; flame.style.animation = 'flicker-big .55s ease-in-out infinite'; flame.style.filter = 'drop-shadow(0 0 14px rgba(239,68,68,.9))'; }
+    if (wrap)   { wrap.style.borderColor = '#ef4444'; wrap.style.boxShadow = '0 0 0 4px rgba(239,68,68,.15)'; }
+    if (badge)  { badge.textContent      = '1 mois'; badge.style.background = '#fef2f2'; badge.style.color = '#b91c1c'; }
+    if (slider)   slider.style.background = '#ef4444';
+    if (estimate) { estimate.style.display = 'flex'; estimate.style.background = '#fff7ed'; estimate.style.borderColor = '#fed7aa'; estimate.style.color = '#9a3412'; }
+    if (estimTxt) estimTxt.textContent   = 'Estimé : +3 000 à 6 000 vues supplémentaires en 1 mois';
+    if (msg)      msg.style.display      = 'block';
   }
-}
 
-function boostDurationChange(sel) {
-  var msg = document.getElementById('boost-msg');
-  if (!msg) return;
-  msg.style.display = (sel.value === '7jours' || sel.value === '1mois') ? 'block' : 'none';
+  lbls.forEach(function(l) {
+    l.classList.toggle('active', parseInt(l.dataset.pos) === pos);
+  });
 }
-
-// Vider boost_duree si checkbox non cochée avant soumission
-document.querySelector('form[method="post"]') && document.querySelector('form[method="post"]').addEventListener('submit', function() {
-  var cb  = document.getElementById('boost-cb');
-  var sel = document.getElementById('boost-select');
-  if (cb && !cb.checked && sel) sel.value = '';
-});
+// Init au chargement
+document.addEventListener('DOMContentLoaded', function() { boostUpdate(0); });
 
 // Drag & drop
 const dz = document.getElementById('dropzone');

@@ -240,10 +240,6 @@ def annonce_detail(request, pk):
 @login_required
 def deposer_annonce(request):
     from .forms import AnnonceForm
-    # L'utilisateur a-t-il déjà utilisé son boost gratuit ?
-    can_free_boost = True
-    if request.user.is_authenticated:
-        can_free_boost = not request.user.annonces.filter(boost_duree='1jour').exists()
 
     if request.method == 'POST':
         if _rate_limited(request, 'deposer', max_count=5, period_minutes=60):
@@ -265,32 +261,22 @@ def deposer_annonce(request):
                     pass
             annonce.photos = photos
 
-            # ── Boost ──────────────────────────────────────────────────────
+            # ── Boost (payant uniquement) ───────────────────────────────────
             boost_duree   = request.POST.get('boost_duree', '').strip()
             boost_demande = request.POST.get('boost_demande', '').strip()
 
-            if boost_duree == '1jour':
-                if can_free_boost:
-                    annonce.boost            = True
-                    annonce.boost_duree      = '1jour'
-                    annonce.boost_status     = 'active'
-                    annonce.boost_expires_at = timezone.now() + datetime.timedelta(days=1)
-                else:
-                    messages.warning(request, "Boost gratuit déjà utilisé — annonce publiée sans boost.")
-            elif boost_duree == '7jours':
-                annonce.boost_duree    = '7jours'
-                annonce.boost_status   = 'pending'
-                annonce.boost_demande  = boost_demande
+            if boost_duree == '7jours':
+                annonce.boost_duree   = '7jours'
+                annonce.boost_status  = 'pending'
+                annonce.boost_demande = boost_demande
             elif boost_duree == '1mois':
-                annonce.boost_duree    = '1mois'
-                annonce.boost_status   = 'pending'
-                annonce.boost_demande  = boost_demande
+                annonce.boost_duree   = '1mois'
+                annonce.boost_status  = 'pending'
+                annonce.boost_demande = boost_demande
 
             annonce.save()
             if boost_duree in ('7jours', '1mois'):
                 messages.success(request, "Annonce publiée ! Votre demande de boost a bien été envoyée — notre équipe vous contactera pour le paiement.")
-            elif boost_duree == '1jour' and can_free_boost:
-                messages.success(request, f"Annonce publiée et boostée 24h ! {len(photos)} photo(s) ajoutée(s).")
             else:
                 messages.success(request, f"Annonce publiée ! {len(photos)} photo(s) ajoutée(s).")
             return redirect('annonce_detail', pk=annonce.pk)
@@ -300,14 +286,17 @@ def deposer_annonce(request):
     return render(request, 'ads/deposer.html', {
         'form':                 form,
         'sous_categories_json': _sous_cats_json(),
-        'can_free_boost':       can_free_boost,
     })
 
 
 @login_required
 def mes_annonces(request):
-    annonces = Annonce.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'ads/mes_annonces.html', {'annonces': annonces})
+    qs = Annonce.objects.filter(user=request.user)
+    statut = request.GET.get('statut', '')
+    if statut in ('actif', 'vendu', 'en_attente'):
+        qs = qs.filter(statut=statut)
+    annonces = qs.order_by('-created_at')
+    return render(request, 'ads/mes_annonces.html', {'annonces': annonces, 'statut_filter': statut})
 
 
 @login_required

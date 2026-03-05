@@ -85,14 +85,8 @@
         </button>
         <!-- Partager -->
         <button onclick="shareAnnonce()" class="inline-flex items-center gap-1.5 border border-gray-300 text-gray-600 text-xs font-semibold px-4 py-2.5 hover:border-gray-900 hover:text-gray-900 transition">
-          🔗 Partager
+          ↗ Partager
         </button>
-        <!-- WhatsApp share -->
-        <a href="https://wa.me/?text={{ annonce.titre|urlencode }}%20%E2%80%94%20{{ request.build_absolute_uri|urlencode }}"
-           target="_blank" rel="noopener"
-           class="inline-flex items-center gap-1.5 border border-gray-300 text-gray-600 text-xs font-semibold px-4 py-2.5 hover:border-gray-900 hover:text-gray-900 transition">
-          💬 WhatsApp
-        </a>
         <!-- Signaler -->
         <a href="{% url 'signaler_annonce' annonce.pk %}"
            class="inline-flex items-center gap-1.5 border border-red-200 text-red-500 text-xs font-semibold px-4 py-2.5 hover:border-red-400 hover:text-red-700 transition ml-auto">

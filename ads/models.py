@@ -19,7 +19,6 @@ STATUTS = [
 
 BOOST_DUREE_CHOICES = [
     ('',       'Sans boost'),
-    ('1jour',  '1 jour gratuit'),
     ('7jours', '7 jours (payant)'),
     ('1mois',  '1 mois (payant)'),
 ]
@@ -68,6 +67,7 @@ SOUS_CATEGORIES = {
         ('autres-vetements',    'Vêtements & Mode'),
         ('autres-sport',        'Sport & Loisirs'),
         ('autres-puericulture', 'Puériculture'),
+        ('autres-jeux',         'Jeux & Jouets'),
         ('autres-divers',       'Divers'),
     ],
 }

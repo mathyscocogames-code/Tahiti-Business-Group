@@ -17,26 +17,26 @@
 
   <!-- Stats -->
   <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
-    <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
-      <div class="text-2xl font-bold text-gray-900">{{ stats.total }}</div>
+    <a href="{% url 'mes_annonces' %}" class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm hover:border-blue-400 hover:shadow-md transition group">
+      <div class="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition">{{ stats.total }}</div>
       <div class="text-xs text-gray-500 mt-1">Annonces</div>
-    </div>
-    <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
-      <div class="text-2xl font-bold text-gray-900">{{ stats.actives }}</div>
+    </a>
+    <a href="{% url 'mes_annonces' %}?statut=actif" class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm hover:border-green-400 hover:shadow-md transition group">
+      <div class="text-2xl font-bold text-gray-900 group-hover:text-green-600 transition">{{ stats.actives }}</div>
       <div class="text-xs text-gray-500 mt-1">Actives</div>
-    </div>
-    <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
-      <div class="text-2xl font-bold text-gray-900">{{ stats.vendues }}</div>
+    </a>
+    <a href="{% url 'mes_annonces' %}?statut=vendu" class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm hover:border-gray-400 hover:shadow-md transition group">
+      <div class="text-2xl font-bold text-gray-900 group-hover:text-gray-600 transition">{{ stats.vendues }}</div>
       <div class="text-xs text-gray-500 mt-1">Vendues</div>
-    </div>
+    </a>
     <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
       <div class="text-2xl font-bold text-gray-900">{{ stats.vues }}</div>
       <div class="text-xs text-gray-500 mt-1">Vues totales</div>
     </div>
-    <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
-      <div class="text-2xl font-bold text-gray-900">{{ stats.messages }}</div>
+    <a href="{% url 'mes_messages' %}" class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm hover:border-blue-400 hover:shadow-md transition group">
+      <div class="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition">{{ stats.messages }}</div>
       <div class="text-xs text-gray-500 mt-1">Messages</div>
-    </div>
+    </a>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

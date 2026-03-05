@@ -33,6 +33,14 @@
       <span>{{ article.created_at|date:"d/m/Y" }}</span>
     </div>
 
+    <!-- Photo -->
+    {% if article.photo %}
+    <div class="border-b border-gray-200">
+      <img src="{{ article.photo }}" alt="{{ article.titre }}"
+           class="w-full max-h-80 object-cover">
+    </div>
+    {% endif %}
+
     <!-- Contenu -->
     <div class="px-8 py-8">
       <p class="text-gray-800 text-base leading-relaxed whitespace-pre-wrap">{{ article.contenu }}</p>

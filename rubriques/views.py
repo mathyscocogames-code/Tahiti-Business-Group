@@ -1,8 +1,43 @@
+import io
+import os
+import uuid
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
+from django.conf import settings as django_settings
+from PIL import Image as PILImage
 from .models import ArticlePromo, ArticleInfo, ArticleNouveaute
+
+
+def _save_article_photo(file_obj, prefix):
+    """Convertit un upload image en WebP et retourne l'URL (locale ou S3)."""
+    img = PILImage.open(file_obj)
+    if img.mode in ('RGBA', 'P'):
+        img = img.convert('RGB')
+    img.thumbnail((1200, 900), PILImage.LANCZOS)
+
+    if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
+        import boto3
+        bucket = os.environ['AWS_STORAGE_BUCKET_NAME']
+        region = os.environ.get('AWS_S3_REGION_NAME', 'eu-north-1')
+        key = f"rubriques/{prefix}_{uuid.uuid4().hex[:8]}.webp"
+        buf = io.BytesIO()
+        img.save(buf, format='WEBP', quality=85, method=6)
+        buf.seek(0)
+        boto3.client(
+            's3', region_name=region,
+            aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
+            aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
+        ).put_object(Bucket=bucket, Key=key, Body=buf, ContentType='image/webp')
+        return f"https://{bucket}.s3.{region}.amazonaws.com/{key}"
+
+    upload_dir = os.path.join(django_settings.MEDIA_ROOT, 'rubriques')
+    os.makedirs(upload_dir, exist_ok=True)
+    filename = f"{prefix}_{uuid.uuid4().hex[:8]}.webp"
+    filepath = os.path.join(upload_dir, filename)
+    img.save(filepath, format='WEBP', quality=85, method=6)
+    return f"{django_settings.MEDIA_URL}rubriques/{filename}"
 
 
 def rubriques_index(request):
@@ -29,12 +64,19 @@ def deposer_promo(request):
         contenu = request.POST.get('contenu', '').strip()
         lien  = request.POST.get('lien_promo', '').strip()
         if titre and contenu:
-            ArticlePromo.objects.create(
+            article = ArticlePromo.objects.create(
                 pro_user=request.user,
                 titre=titre,
                 contenu=contenu,
                 lien_promo=lien,
             )
+            photo_file = request.FILES.get('photo')
+            if photo_file:
+                try:
+                    article.photo = _save_article_photo(photo_file, f'promo_{article.pk}')
+                    article.save(update_fields=['photo'])
+                except Exception:
+                    pass
             messages.success(request, "Votre promo est en attente de validation par l'équipe TBG.")
             return redirect('rubriques_index')
     return render(request, 'rubriques/deposer_promo.html')
@@ -47,12 +89,19 @@ def deposer_info(request):
         contenu = request.POST.get('contenu', '').strip()
         source = request.POST.get('source_media', '').strip()
         if titre and contenu:
-            ArticleInfo.objects.create(
+            article = ArticleInfo.objects.create(
                 auteur=request.user,
                 titre=titre,
                 contenu=contenu,
                 source_media=source,
             )
+            photo_file = request.FILES.get('photo')
+            if photo_file:
+                try:
+                    article.photo = _save_article_photo(photo_file, f'info_{article.pk}')
+                    article.save(update_fields=['photo'])
+                except Exception:
+                    pass
             messages.success(request, "Votre info est en attente de validation par l'équipe TBG.")
             return redirect('rubriques_index')
     return render(request, 'rubriques/deposer_info.html')
@@ -68,12 +117,19 @@ def deposer_nouveaute(request):
         contenu = request.POST.get('contenu', '').strip()
         lien   = request.POST.get('lien_redirection', '').strip()
         if titre and contenu:
-            ArticleNouveaute.objects.create(
+            article = ArticleNouveaute.objects.create(
                 pro_user=request.user,
                 titre=titre,
                 contenu=contenu,
                 lien_redirection=lien,
             )
+            photo_file = request.FILES.get('photo')
+            if photo_file:
+                try:
+                    article.photo = _save_article_photo(photo_file, f'nouv_{article.pk}')
+                    article.save(update_fields=['photo'])
+                except Exception:
+                    pass
             messages.success(request, "Votre nouveauté est en attente de validation par l'équipe TBG.")
             return redirect('rubriques_index')
     return render(request, 'rubriques/deposer_nouveaute.html')
