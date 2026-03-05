@@ -685,6 +685,7 @@ main {
   background: #f8faff;
   overflow: hidden;
 }
+.cat-label-card__img-wrap { line-height: 1; }
 .cat-label-card__img {
   max-width: 100%;
   max-height: 100%;

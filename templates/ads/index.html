@@ -128,7 +128,7 @@
         </div>
         <div class="cat-section-row">
           <a href="{% url 'rubriques_index' %}" class="cat-label-card">
-            <div class="cat-label-card__img-wrap"><img src="{% static 'img/cat-promotion.png' %}" alt="Promos" class="cat-label-card__img"></div>
+            <div class="cat-label-card__img-wrap" style="font-size:3rem">💰</div>
             <div class="cat-label-card__title">Promos &amp; Bons plans</div>
           </a>
           <div class="cat-carousel-wrapper cat-section-row__carousel">
@@ -181,7 +181,7 @@
       {% if annonces_recentes %}
       <div class="cat-section-row mb-10">
         <a href="{% url 'liste_annonces' %}" class="cat-label-card">
-          <div class="cat-label-card__img-wrap"><img src="{% static 'img/cat-recentes.png' %}" alt="Annonces récentes" class="cat-label-card__img"></div>
+          <div class="cat-label-card__img-wrap" style="font-size:3rem">🗂️</div>
           <div class="cat-label-card__title">Annonces récentes</div>
         </a>
         <div class="cat-carousel-wrapper cat-section-row__carousel">
@@ -294,19 +294,14 @@
         <!-- Carousel avec carte label -->
         <div class="cat-section-row">
           <a href="{% url 'liste_annonces' %}?categorie={{ code }}" class="cat-label-card">
-            {% if code == 'vehicules' %}
-            <div class="cat-label-card__img-wrap"><img src="{% static 'img/cat-vehicule.png' %}" alt="{{ cat_data.label }}" class="cat-label-card__img"></div>
-            {% elif code == 'immobilier' %}
-            <div class="cat-label-card__img-wrap"><img src="{% static 'img/cat-immobilier.png' %}" alt="{{ cat_data.label }}" class="cat-label-card__img"></div>
-            {% elif code == 'electronique' %}
-            <div class="cat-label-card__img-wrap"><img src="{% static 'img/cat-electronique.png' %}" alt="{{ cat_data.label }}" class="cat-label-card__img"></div>
-            {% elif code == 'emploi' %}
-            <div class="cat-label-card__img-wrap"><img src="{% static 'img/cat-emploi.png' %}" alt="{{ cat_data.label }}" class="cat-label-card__img"></div>
-            {% elif code == 'services' %}
-            <div class="cat-label-card__img-wrap"><img src="{% static 'img/cat-service.png' %}" alt="{{ cat_data.label }}" class="cat-label-card__img"></div>
-            {% else %}
-            <div class="cat-label-card__img-wrap"><img src="{% static 'img/cat-autre.png' %}" alt="{{ cat_data.label }}" class="cat-label-card__img"></div>
-            {% endif %}
+            <div class="cat-label-card__img-wrap" style="font-size:3rem">
+              {% if code == 'vehicules' %}🚗
+              {% elif code == 'immobilier' %}🏠
+              {% elif code == 'electronique' %}📱
+              {% elif code == 'emploi' %}💼
+              {% elif code == 'services' %}🔧
+              {% else %}📦{% endif %}
+            </div>
             <div class="cat-label-card__title">{{ cat_data.label }}</div>
           </a>
           <div class="cat-carousel-wrapper cat-section-row__carousel">
