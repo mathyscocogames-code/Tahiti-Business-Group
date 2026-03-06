@@ -3,7 +3,6 @@
    Inspiré : ladagemaxime.com + Facebook Marketplace
    ================================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
 
 :root {
   --bg:        #ffffff;
@@ -40,7 +39,7 @@ html {
 }
 
 body {
-  font-family: 'Playfair Display', Georgia, serif !important;
+  font-family: Arial, Helvetica, sans-serif !important;
   font-weight: 500;
   background: var(--bg-alt);
   color: var(--text);
@@ -49,11 +48,10 @@ body {
   max-width: 100%;
 }
 
-/* Force Playfair sur tous les éléments — Tailwind CDN injecte ses propres
    font-family sur button/input/etc. après notre CSS, on les force ici */
 button, input, select, textarea, a,
 nav, header, li, span, div, p, label {
-  font-family: 'Playfair Display', Georgia, serif !important;
+  font-family: Arial, Helvetica, sans-serif !important;
   font-weight: 500;
 }
 code, pre, kbd, samp { font-family: ui-monospace, Menlo, Monaco, Consolas, monospace !important; }
@@ -1109,7 +1107,7 @@ img.loaded     { opacity: 1; }
   font-weight: 900;
   color: #fff;
   letter-spacing: -.3px;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: Arial, Helvetica, sans-serif;
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
   flex: 1;
 }

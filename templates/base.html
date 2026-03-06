@@ -5,17 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{% block title %}Tahiti Business Group{% endblock %} — Annonces Polynésie</title>
   <meta name="description" content="{% block meta_desc %}Annonces gratuites en Polynésie française. Achetez et vendez véhicules, immobilier, électronique, emploi.{% endblock %}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans:  ['Playfair Display', 'Georgia', 'serif'],
-            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans:  ['Arial', 'Helvetica', 'sans-serif'],
+            serif: ['Arial', 'Helvetica', 'sans-serif'],
           },
           colors: { primary: '#1a6cf1', accent: '#059669' }
         }
