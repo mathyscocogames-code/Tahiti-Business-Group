@@ -5,7 +5,7 @@
      class="pub-strip-img-wrap">
     <img src="{{ current_strip.get_image }}"
          alt="{{ current_strip.titre }}"
-         class="pub-strip-img">
+         class="pub-strip-img" loading="lazy">
   </a>
   {% else %}
   <a href="{% url 'tarifs_pubs' %}" class="billboard-milieu-empty">

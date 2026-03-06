@@ -1,6 +1,21 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.http import HttpResponse
+import csv
 from .models import Annonce, Message, Signalement
+
+
+def _export_csv(modeladmin, request, queryset):
+    """Action admin : exporte la sélection en CSV."""
+    response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+    response['Content-Disposition'] = f'attachment; filename="{queryset.model.__name__}.csv"'
+    writer = csv.writer(response)
+    fields = [f.name for f in queryset.model._meta.fields]
+    writer.writerow(fields)
+    for obj in queryset:
+        writer.writerow([getattr(obj, f) for f in fields])
+    return response
+_export_csv.short_description = "Exporter en CSV"
 
 
 @admin.register(Annonce)
@@ -9,7 +24,7 @@ class AnnonceAdmin(admin.ModelAdmin):
     list_filter = ['statut', 'categorie', 'boost', 'created_at']
     search_fields = ['titre', 'description', 'user__email', 'user__nom']
     list_editable = ['boost']
-    actions = ['approuver', 'moderer', 'marquer_vendu']
+    actions = ['approuver', 'moderer', 'marquer_vendu', _export_csv]
     readonly_fields = ['views', 'created_at', 'updated_at', 'photos_preview']
     fieldsets = (
         ('Annonce', {'fields': ('titre', 'categorie', 'prix', 'prix_label', 'localisation', 'description')}),

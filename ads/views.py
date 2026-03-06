@@ -169,7 +169,9 @@ def liste_annonces(request):
     cat      = request.GET.get('categorie', '')
     sous_cat = request.GET.get('sous_cat', '')
     ville    = request.GET.get('localisation', '')
+    prix_min = request.GET.get('prix_min', '')
     prix_max = request.GET.get('prix_max', '')
+    tri      = request.GET.get('tri', '')
 
     if q:
         qs = qs.filter(Q(titre__icontains=q) | Q(description__icontains=q))
@@ -179,24 +181,56 @@ def liste_annonces(request):
         qs = qs.filter(sous_categorie=sous_cat)
     if ville:
         qs = qs.filter(localisation__icontains=ville)
+    if prix_min:
+        try:
+            qs = qs.filter(prix__gte=int(prix_min))
+        except ValueError:
+            pass
     if prix_max:
         try:
             qs = qs.filter(prix__lte=int(prix_max))
         except ValueError:
             pass
 
-    qs = _apply_boost_sort(qs)
-    paginator = Paginator(qs, 50)
+    if tri == 'prix_asc':
+        qs = qs.order_by('prix')
+    elif tri == 'prix_desc':
+        qs = qs.order_by('-prix')
+    elif tri == 'recent':
+        qs = qs.order_by('-created_at')
+    else:
+        qs = _apply_boost_sort(qs)
+
+    # Sous-catégories disponibles pour la catégorie active
+    sous_cats_dispo = SOUS_CATEGORIES.get(cat, []) if cat else []
+
+    paginator = Paginator(qs, 24)
     page = paginator.get_page(request.GET.get('page'))
 
+    # Partial response for "load more" AJAX requests
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        html = ''.join(
+            render_to_string('partials/_annonce_card.html', {'annonce': a}, request=request)
+            for a in page
+        )
+        return JsonResponse({
+            'html': html,
+            'has_next': page.has_next(),
+            'next_page': page.next_page_number() if page.has_next() else None,
+        })
+
     return render(request, 'ads/liste.html', {
-        'annonces':   page,
-        'categories': CATEGORIES,
-        'q':          q,
-        'cat_active': cat,
-        'sous_cat':   sous_cat,
-        'ville':      ville,
-        'prix_max':   prix_max,
+        'annonces':        page,
+        'categories':      CATEGORIES,
+        'q':               q,
+        'cat_active':      cat,
+        'sous_cat':        sous_cat,
+        'sous_cats_dispo': sous_cats_dispo,
+        'sous_cats_data':  _sous_cats_data(),
+        'ville':           ville,
+        'prix_min':        prix_min,
+        'prix_max':        prix_max,
+        'tri':             tri,
     })
 
 
@@ -567,3 +601,14 @@ def export_csv(request):
 # ── Custom 404 ───────────────────────────────────────────────────────────
 def custom_404(request, exception=None):
     return render(request, '404.html', status=404)
+
+
+# ── Sitemap dynamique ─────────────────────────────────────────────────────
+def sitemap_xml(request):
+    base = request.build_absolute_uri('/').rstrip('/')
+    annonces = Annonce.objects.filter(statut='actif').values('pk', 'updated_at').order_by('-updated_at')[:500]
+    xml = render_to_string('sitemap.xml', {
+        'base': base,
+        'annonces': annonces,
+    }, request=request)
+    return HttpResponse(xml, content_type='application/xml')

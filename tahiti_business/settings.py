@@ -69,6 +69,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'pubs.context_processors.sidebar_pubs',
+                'pubs.context_processors.admin_stats',
             ],
         },
     },
@@ -115,6 +116,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# ── Email (vérification à l'inscription) ──────────────────────────────────────
+# Pour activer : ajouter EMAIL_HOST_USER et EMAIL_HOST_PASSWORD dans Railway
+_email_user = os.environ.get('EMAIL_HOST_USER', '')
+if _email_user:
+    EMAIL_BACKEND      = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST         = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT         = int(os.environ.get('EMAIL_PORT', '587'))
+    EMAIL_USE_TLS      = True
+    EMAIL_HOST_USER    = _email_user
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+else:
+    # Sans SMTP : email affiché dans la console (dev) ou vérif désactivée (prod)
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@tahitibusinessgroup.com')
 
 # ── AWS S3 (stockage persistant sur Railway) ──────────────────────────────────
 # Variables à ajouter dans Railway → Settings → Variables :

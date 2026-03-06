@@ -1,0 +1,116 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div style="margin-bottom:24px">
+  <h1 style="font-size:1.4rem;font-weight:700;color:#0f172a;margin-bottom:4px">Tableau de bord</h1>
+  <p style="color:#6b7280;font-size:13px">Bienvenue sur l'administration Tahiti Business Group</p>
+</div>
+
+<!-- Statistiques -->
+{% with stats=tbg_stats %}
+{% if stats %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-bottom:28px">
+
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+    <div style="font-size:2rem;font-weight:900;color:#1a6cf1">{{ stats.annonces_actives }}</div>
+    <div style="font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:4px">Annonces actives</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+    <div style="font-size:2rem;font-weight:900;color:#f59e0b">{{ stats.annonces_moderees }}</div>
+    <div style="font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:4px">À modérer</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+    <div style="font-size:2rem;font-weight:900;color:#10b981">{{ stats.users_total }}</div>
+    <div style="font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:4px">Utilisateurs</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+    <div style="font-size:2rem;font-weight:900;color:#8b5cf6">{{ stats.users_new_7j }}</div>
+    <div style="font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:4px">Nouveaux (7j)</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+    <div style="font-size:2rem;font-weight:900;color:#ef4444">{{ stats.messages_total }}</div>
+    <div style="font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:4px">Messages</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+    <div style="font-size:2rem;font-weight:900;color:#0ea5e9">{{ stats.rubriques_attente }}</div>
+    <div style="font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:4px">Rubriques à valider</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+    <div style="font-size:2rem;font-weight:900;color:#d97706">{{ stats.pubs_actives }}</div>
+    <div style="font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:4px">Pubs actives</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+    <div style="font-size:2rem;font-weight:900;color:#6b7280">{{ stats.vues_totales }}</div>
+    <div style="font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:4px">Vues totales</div>
+  </div>
+
+</div>
+
+<!-- Actions rapides -->
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px">
+  <a href="{% url 'admin:ads_annonce_changelist' %}" style="background:#1a6cf1;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none">Annonces</a>
+  <a href="{% url 'admin:rubriques_articleinfo_changelist' %}" style="background:#0f172a;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none">Infos</a>
+  <a href="{% url 'admin:rubriques_articlepromo_changelist' %}" style="background:#f59e0b;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none">Promos</a>
+  <a href="{% url 'admin:rubriques_articlenouveaute_changelist' %}" style="background:#10b981;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none">Nouveautés</a>
+  <a href="{% url 'admin:pubs_publicite_changelist' %}" style="background:#8b5cf6;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none">Publicités</a>
+  <a href="{% url 'admin:users_user_changelist' %}" style="background:#6b7280;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none">Utilisateurs</a>
+  <a href="/" target="_blank" style="background:#e5e7eb;color:#374151;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none">Voir le site →</a>
+</div>
+
+<!-- 5 dernières annonces + signalements -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden">
+    <div style="background:#0f172a;color:#e2e8f0;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em">5 dernières annonces</div>
+    <table style="width:100%;border-collapse:collapse">
+      {% for a in stats.dernières_annonces %}
+      <tr style="border-bottom:1px solid #f1f5f9">
+        <td style="padding:8px 12px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          <a href="{% url 'admin:ads_annonce_change' a.pk %}" style="color:#1a6cf1;font-weight:600;text-decoration:none">{{ a.titre|truncatechars:30 }}</a>
+        </td>
+        <td style="padding:8px 12px;font-size:11px;color:#6b7280;white-space:nowrap">{{ a.created_at|date:"d/m" }}</td>
+        <td style="padding:8px 12px">
+          {% if a.statut == 'actif' %}<span style="background:#10b981;color:#fff;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">Actif</span>
+          {% elif a.statut == 'modere' %}<span style="background:#f59e0b;color:#fff;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">Modéré</span>
+          {% else %}<span style="background:#6b7280;color:#fff;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">{{ a.statut }}</span>{% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3" style="padding:16px;text-align:center;color:#9ca3af;font-size:12px">Aucune annonce</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden">
+    <div style="background:#0f172a;color:#e2e8f0;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em">Signalements récents</div>
+    <table style="width:100%;border-collapse:collapse">
+      {% for s in stats.signalements %}
+      <tr style="border-bottom:1px solid #f1f5f9">
+        <td style="padding:8px 12px;font-size:12px">
+          <a href="{% url 'admin:ads_signalement_change' s.pk %}" style="color:#ef4444;font-weight:600;text-decoration:none">{{ s.annonce.titre|truncatechars:28 }}</a>
+        </td>
+        <td style="padding:8px 12px;font-size:11px;color:#6b7280">{{ s.get_raison_display }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="2" style="padding:16px;text-align:center;color:#9ca3af;font-size:12px">Aucun signalement</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+{% endif %}
+{% endwith %}
+
+<!-- Apps Django standard en dessous -->
+<div style="margin-top:28px">
+  {% include "admin/app_list.html" with app_list=app_list %}
+</div>
+
+{% endblock %}

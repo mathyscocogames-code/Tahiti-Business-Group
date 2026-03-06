@@ -2,7 +2,7 @@
 <!-- Annonce header -->
 <div class="flex gap-3 mb-4">
   {% if annonce.get_main_photo %}
-  <img src="{{ annonce.get_main_photo }}" class="w-14 h-14 object-cover rounded-xl flex-shrink-0 border border-gray-200" alt="">
+  <img src="{{ annonce.get_main_photo }}" class="w-14 h-14 object-cover rounded-xl flex-shrink-0 border border-gray-200" alt="" loading="lazy">
   {% else %}
   <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-2xl flex-shrink-0">
     {% if annonce.categorie == 'vehicules' %}🚗{% elif annonce.categorie == 'immobilier' %}🏠{% elif annonce.categorie == 'electronique' %}📱{% elif annonce.categorie == 'emploi' %}💼{% elif annonce.categorie == 'services' %}🔧{% else %}📦{% endif %}

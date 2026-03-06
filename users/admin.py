@@ -1,7 +1,20 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
+from django.http import HttpResponse
+import csv
 from .models import User
+
+
+def _export_csv(modeladmin, request, queryset):
+    response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+    response['Content-Disposition'] = 'attachment; filename="utilisateurs.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['email', 'nom', 'role', 'tel', 'date_joined', 'is_active'])
+    for u in queryset:
+        writer.writerow([u.email, u.nom, u.role, u.tel, u.date_joined, u.is_active])
+    return response
+_export_csv.short_description = "Exporter en CSV"
 
 
 @admin.register(User)
@@ -11,6 +24,7 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ['email', 'nom', 'tel']
     ordering = ['-date_joined']
     readonly_fields = ['date_joined']
+    actions = [_export_csv]
 
     fieldsets = (
         ('Identifiants', {'fields': ('email', 'password')}),

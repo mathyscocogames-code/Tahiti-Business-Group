@@ -13,6 +13,13 @@
     </div>
 
     <div class="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm">
+      {% if locked %}
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-4 rounded-xl text-sm font-medium text-center">
+        <div class="text-2xl mb-2">🔒</div>
+        <strong>Accès temporairement bloqué</strong><br>
+        Trop de tentatives échouées. Réessayez dans 15 minutes.
+      </div>
+      {% else %}
       <form method="post" class="space-y-4">
         {% csrf_token %}
 
@@ -48,6 +55,7 @@
           Se connecter
         </button>
       </form>
+      {% endif %}
 
       <div class="mt-6 text-center text-sm text-gray-500">
         Pas encore de compte ?

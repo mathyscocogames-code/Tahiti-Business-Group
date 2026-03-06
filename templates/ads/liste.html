@@ -15,20 +15,41 @@
             {% for code, label in categories %}{% if code == cat_active %}{{ label }}{% endif %}{% endfor %}
           {% elif q %}Résultats pour "{{ q }}"{% else %}Toutes les annonces{% endif %}
         </h1>
-        <form method="get">
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-            <input type="text" name="q" value="{{ q }}" placeholder="Mot-clé..." class="form-input text-sm col-span-2 sm:col-span-1">
-            <select name="categorie" class="form-input text-sm">
+        <form method="get" id="filtres-form">
+          <!-- Ligne 1 : recherche + catégorie + localisation -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+            <input type="text" name="q" value="{{ q }}" placeholder="Mot-clé..." class="form-input text-sm">
+            <select name="categorie" class="form-input text-sm" id="filter-cat" onchange="updateSousCats(this.value)">
               <option value="">Toutes catégories</option>
               {% for code, label in categories %}
               <option value="{{ code }}" {% if code == cat_active %}selected{% endif %}>{{ label }}</option>
               {% endfor %}
             </select>
-            <input type="text" name="localisation" value="{{ ville }}" placeholder="Ville, île..." class="form-input text-sm">
-            <input type="number" name="prix_max" value="{{ prix_max }}" placeholder="Prix max XPF" class="form-input text-sm">
+            <input type="text" name="localisation" value="{{ ville }}" placeholder="Île, ville..." class="form-input text-sm">
           </div>
-          <div class="flex gap-2">
-            <button type="submit" class="btn btn-primary text-sm">Filtrer</button>
+          <!-- Ligne 2 : sous-catégorie + prix min/max + tri -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+            <select name="sous_cat" class="form-input text-sm" id="filter-sous-cat">
+              <option value="">Sous-catégorie</option>
+              {% for val, lbl in sous_cats_dispo %}
+              <option value="{{ val }}" {% if val == sous_cat %}selected{% endif %}>{{ lbl }}</option>
+              {% endfor %}
+            </select>
+            <div class="flex gap-1">
+              <input type="number" name="prix_min" value="{{ prix_min }}" placeholder="Prix min" class="form-input text-sm w-full" min="0">
+            </div>
+            <div class="flex gap-1">
+              <input type="number" name="prix_max" value="{{ prix_max }}" placeholder="Prix max" class="form-input text-sm w-full" min="0">
+            </div>
+            <select name="tri" class="form-input text-sm">
+              <option value="" {% if not tri %}selected{% endif %}>Pertinence</option>
+              <option value="recent" {% if tri == 'recent' %}selected{% endif %}>Plus récentes</option>
+              <option value="prix_asc" {% if tri == 'prix_asc' %}selected{% endif %}>Prix croissant</option>
+              <option value="prix_desc" {% if tri == 'prix_desc' %}selected{% endif %}>Prix décroissant</option>
+            </select>
+          </div>
+          <div class="flex gap-2 flex-wrap">
+            <button type="submit" class="btn btn-primary text-sm">Rechercher</button>
             <a href="{% url 'liste_annonces' %}" class="btn btn-outline text-sm">Réinitialiser</a>
           </div>
         </form>
@@ -45,18 +66,14 @@
         {% endfor %}
       </div>
 
-      <!-- Pagination -->
-      {% if annonces.has_other_pages %}
-      <div class="flex justify-center items-center gap-2">
-        {% if annonces.has_previous %}
-        <a href="?{% if q %}q={{ q }}&{% endif %}{% if cat_active %}categorie={{ cat_active }}&{% endif %}page={{ annonces.previous_page_number }}"
-          class="btn btn-outline text-sm">← Précédent</a>
-        {% endif %}
-        <span class="text-sm text-gray-500 px-4">Page {{ annonces.number }} / {{ annonces.paginator.num_pages }}</span>
-        {% if annonces.has_next %}
-        <a href="?{% if q %}q={{ q }}&{% endif %}{% if cat_active %}categorie={{ cat_active }}&{% endif %}page={{ annonces.next_page_number }}"
-          class="btn btn-primary text-sm">Suivant →</a>
-        {% endif %}
+      <!-- Charger plus -->
+      {% if annonces.has_next %}
+      <div class="flex justify-center mt-6">
+        <button id="load-more-btn"
+          data-next="{{ annonces.next_page_number }}"
+          class="btn btn-outline text-sm px-8 py-3 font-bold">
+          Charger plus
+        </button>
       </div>
       {% endif %}
 
@@ -76,4 +93,55 @@
 
   </div>
 </div>
+
+{% block extra_js %}
+{{ sous_cats_data|json_script:"sous-cats-liste" }}
+
+<script>
+const SOUS_CATS = JSON.parse(document.getElementById('sous-cats-liste').textContent);
+function updateSousCats(cat) {
+  const sel = document.getElementById('filter-sous-cat');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Sous-catégorie</option>';
+  (SOUS_CATS[cat] || []).forEach(({value, label}) => {
+    const opt = document.createElement('option');
+    opt.value = value; opt.textContent = label;
+    if (value === current) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+// Init au chargement si catégorie déjà sélectionnée
+const catSel = document.getElementById('filter-cat');
+if (catSel && catSel.value) updateSousCats(catSel.value);
+
+// Charger plus
+(function() {
+  const btn = document.getElementById('load-more-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    const page = btn.dataset.next;
+    const url = new URL(location.href);
+    url.searchParams.set('page', page);
+    btn.textContent = 'Chargement…';
+    btn.disabled = true;
+    fetch(url.toString(), {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('annonces-grid').insertAdjacentHTML('beforeend', data.html);
+        if (data.has_next) {
+          btn.dataset.next = data.next_page;
+          btn.textContent = 'Charger plus';
+          btn.disabled = false;
+        } else {
+          btn.closest('div').remove();
+        }
+      })
+      .catch(() => {
+        btn.textContent = 'Charger plus';
+        btn.disabled = false;
+      });
+  });
+})();
+</script>
+{% endblock %}
 {% endblock %}

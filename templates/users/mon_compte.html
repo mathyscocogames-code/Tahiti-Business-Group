@@ -6,8 +6,14 @@
 <div class="max-w-6xl mx-auto px-4 py-8">
 
   <div class="flex items-center gap-4 mb-8">
-    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-2xl font-bold">
-      {{ user.nom|first|upper|default:user.email|first|upper }}
+    <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+      {% if user.avatar %}
+      <img src="{{ user.avatar.url }}" alt="Avatar" class="w-full h-full object-cover" loading="lazy">
+      {% else %}
+      <div class="w-full h-full bg-primary flex items-center justify-center text-2xl font-bold text-white">
+        {{ user.nom|first|upper|default:user.email|first|upper }}
+      </div>
+      {% endif %}
     </div>
     <div>
       <h1 class="text-2xl font-bold">{{ user.nom|default:"Mon compte" }}</h1>
@@ -59,6 +65,16 @@
             <label class="block text-sm text-muted mb-1">{{ form.whatsapp.label }}</label>
             {{ form.whatsapp }}
           </div>
+          <div>
+            <label class="block text-sm text-muted mb-1">Photo de profil</label>
+            {% if user.avatar %}
+            <div class="flex items-center gap-3 mb-2">
+              <img src="{{ user.avatar.url }}" alt="Avatar actuel" class="w-10 h-10 rounded-full object-cover" loading="lazy">
+              <span class="text-xs text-muted">Photo actuelle</span>
+            </div>
+            {% endif %}
+            {{ form.avatar }}
+          </div>
           <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white font-semibold py-2.5 rounded-xl transition text-sm">
             Sauvegarder
           </button>
@@ -72,6 +88,12 @@
           Dashboard Admin
         </a>
         {% endif %}
+        <div class="mt-4 pt-4 border-t border-border">
+          <a href="{% url 'supprimer_compte' %}"
+             class="block text-center text-xs text-red-400 hover:text-red-600 transition">
+            Supprimer mon compte
+          </a>
+        </div>
       </div>
     </div>
 
@@ -90,7 +112,7 @@
           <div class="flex items-center gap-3 p-3 bg-dark rounded-xl">
             <div class="w-12 h-10 bg-border rounded-lg overflow-hidden flex-shrink-0">
               {% if annonce.get_main_photo %}
-              <img src="{{ annonce.get_main_photo }}" class="w-full h-full object-cover">
+              <img src="{{ annonce.get_main_photo }}" class="w-full h-full object-cover" loading="lazy">
               {% else %}
               <div class="w-full h-full flex items-center justify-center text-sm">
                 {% if annonce.categorie == 'vehicules' %}🚗{% elif annonce.categorie == 'immobilier' %}🏠{% elif annonce.categorie == 'electronique' %}📱{% else %}📦{% endif %}

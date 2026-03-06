@@ -3,7 +3,7 @@ from django.urls import path, include, re_path
 from django.conf import settings
 from django.views.static import serve
 from django.http import HttpResponse
-from django.views.generic import TemplateView
+from ads.views import sitemap_xml
 
 handler404 = 'ads.views.custom_404'
 
@@ -28,10 +28,7 @@ urlpatterns = [
     path('pubs/', include('pubs.urls')),
     path('rubriques/', include('rubriques.urls')),
     path('robots.txt', robots_txt),
-    path('sitemap.xml', TemplateView.as_view(
-        template_name='sitemap.xml',
-        content_type='application/xml',
-    )),
+    path('sitemap.xml', sitemap_xml),
 ]
 
 # Serve media files in all environments (DEBUG=True and DEBUG=False)

@@ -2,27 +2,75 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.cache import cache
+from django.core.mail import send_mail
+from django.core import signing
+from django.conf import settings as django_settings
 from .forms import LoginForm, RegisterForm, ProfileForm
 from ads.models import Annonce, Message
+
+_LOGIN_MAX_ATTEMPTS = 5
+_LOGIN_LOCKOUT_SEC  = 15 * 60  # 15 minutes
+
+
+def _client_ip(request):
+    xff = request.META.get('HTTP_X_FORWARDED_FOR')
+    return xff.split(',')[0].strip() if xff else request.META.get('REMOTE_ADDR', '0.0.0.0')
 
 
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('index')
 
+    ip       = _client_ip(request)
+    key      = f'login_fail_{ip}'
+    attempts = cache.get(key, 0)
+
+    # IP bloquée
+    if attempts >= _LOGIN_MAX_ATTEMPTS:
+        form = LoginForm()
+        return render(request, 'users/login.html', {'form': form, 'locked': True})
+
     form = LoginForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
-        email = form.cleaned_data['email']
+        email    = form.cleaned_data['email']
         password = form.cleaned_data['password']
-        user = authenticate(request, username=email, password=password)
+        user     = authenticate(request, username=email, password=password)
         if user:
+            cache.delete(key)          # Réinitialise le compteur en cas de succès
             login(request, user)
             messages.success(request, f"Bienvenue {user.nom or user.email} !")
             return redirect(request.GET.get('next', 'index'))
         else:
-            form.add_error(None, "Email ou mot de passe incorrect.")
+            attempts += 1
+            cache.set(key, attempts, _LOGIN_LOCKOUT_SEC)
+            remaining = _LOGIN_MAX_ATTEMPTS - attempts
+            if remaining > 0:
+                form.add_error(None, f"Email ou mot de passe incorrect. ({remaining} tentative{'s' if remaining > 1 else ''} restante{'s' if remaining > 1 else ''})")
+            else:
+                form.add_error(None, "Trop de tentatives échouées. Accès bloqué 15 minutes.")
 
     return render(request, 'users/login.html', {'form': form})
+
+
+def _smtp_configured():
+    return bool(getattr(django_settings, 'EMAIL_HOST_USER', ''))
+
+
+def _send_verification_email(request, user):
+    token = signing.dumps({'uid': user.pk}, salt='email-verify')
+    link  = request.build_absolute_uri(f'/users/verify-email/{token}/')
+    send_mail(
+        subject='Confirmez votre adresse email — Tahiti Business Group',
+        message=(
+            f"Bonjour {user.nom or user.email},\n\n"
+            f"Cliquez sur ce lien pour confirmer votre email :\n{link}\n\n"
+            f"Ce lien expire dans 48 heures.\n\n— L'équipe TBG"
+        ),
+        from_email=django_settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[user.email],
+        fail_silently=True,
+    )
 
 
 def register_view(request):
@@ -31,12 +79,39 @@ def register_view(request):
 
     form = RegisterForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
-        user = form.save()
-        login(request, user)
-        messages.success(request, "Compte créé avec succès ! Bienvenue sur Tahiti Business Group.")
-        return redirect('index')
+        user = form.save(commit=False)
+        smtp_ok = _smtp_configured()
+        if smtp_ok:
+            user.email_verified = False
+            user.is_active = False  # Inactif jusqu'à vérification
+        user.save()
+        if smtp_ok:
+            _send_verification_email(request, user)
+            messages.info(request, "Compte créé ! Vérifiez vos emails pour activer votre compte.")
+            return redirect('login')
+        else:
+            login(request, user)
+            messages.success(request, "Compte créé avec succès ! Bienvenue sur Tahiti Business Group.")
+            return redirect('index')
 
     return render(request, 'users/register.html', {'form': form})
+
+
+def verify_email(request, token):
+    try:
+        data = signing.loads(token, salt='email-verify', max_age=48 * 3600)
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        user = User.objects.get(pk=data['uid'])
+        user.email_verified = True
+        user.is_active = True
+        user.save(update_fields=['email_verified', 'is_active'])
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        messages.success(request, "Email confirmé ! Bienvenue sur Tahiti Business Group.")
+        return redirect('index')
+    except (signing.BadSignature, signing.SignatureExpired, Exception):
+        messages.error(request, "Lien de vérification invalide ou expiré.")
+        return redirect('login')
 
 
 def logout_view(request):
@@ -120,6 +195,21 @@ def admin_dashboard(request):
         'annonces_recentes': annonces_recentes,
         'demandes_pubs':  demandes_pubs,
     })
+
+
+@login_required
+def supprimer_compte(request):
+    if request.method == 'POST':
+        confirm = request.POST.get('confirm', '')
+        if confirm == 'SUPPRIMER':
+            user = request.user
+            logout(request)
+            user.delete()
+            messages.success(request, "Votre compte a été supprimé définitivement.")
+            return redirect('index')
+        else:
+            messages.error(request, "Confirmation incorrecte. Tapez SUPPRIMER pour confirmer.")
+    return render(request, 'users/supprimer_compte.html')
 
 
 @login_required
