@@ -729,6 +729,7 @@ main {
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
   user-select: none;
+  overflow: hidden;
 }
 .promo-card:not(.open):hover {
   transform: translateY(-3px);
@@ -825,6 +826,14 @@ main {
 }
 
 /* ── Info Card ────────────────────────────────────────────────── */
+.info-card__photo {
+  width: calc(100% + 32px);
+  margin: -14px -16px 12px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+  display: block;
+}
 .info-card {
   background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
   border: 1.5px solid #bae6fd;
@@ -833,6 +842,7 @@ main {
   cursor: pointer;
   transition: transform .2s, box-shadow .2s;
   user-select: none;
+  overflow: hidden;
 }
 .info-card:not(.open):hover {
   transform: translateY(-3px);
@@ -882,6 +892,7 @@ main {
   cursor: pointer;
   transition: transform .2s, box-shadow .2s;
   user-select: none;
+  overflow: hidden;
 }
 .nouv-card:not(.open):hover {
   transform: translateY(-3px);
