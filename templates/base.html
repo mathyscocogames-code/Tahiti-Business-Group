@@ -43,9 +43,9 @@
 
 <div id="layout-outer">
 
-<!-- ═══ BILLBOARD — au-dessus du cadre (desktop ≥1025px) ═══ -->
+<!-- ═══ BILLBOARD — affiché sur toutes les pages sauf formulaires ═══ -->
 {% with url=request.resolver_match.url_name %}
-{% if url != 'deposer_annonce' and url != 'mes_favoris' and url != 'mes_messages' and url != 'mon_compte' and url != 'edit_annonce' and url != 'login' and url != 'register' and url != 'page_info' and url != 'page_business' and url != 'rubriques_index' and url != 'mes_annonces' and url != 'tarifs_pubs' and url != 'demande_pub' %}
+{% if url != 'deposer_annonce' and url != 'edit_annonce' and url != 'demande_pub' %}
 <div id="layout-billboard">
 <div class="pub-bg-fixed">
   {% if pub_billboard %}
@@ -62,6 +62,8 @@
   {% endif %}
 </div>
 </div><!-- /#layout-billboard -->
+{% else %}
+<div id="layout-billboard-absent"></div>
 {% endif %}
 {% endwith %}
 

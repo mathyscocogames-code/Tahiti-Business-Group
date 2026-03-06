@@ -2383,8 +2383,12 @@ img.loaded     { opacity: 1; }
   .pub-spacer { display: none; }
 
   /* ── 2. COMPENSATION BILLBOARD FIXE 80px ─────────────────────── */
-  #layout-row { margin-top: 80px; }
-  #main-frame header { top: 80px; }
+  /* margin-top uniquement quand le billboard est présent */
+  #layout-billboard + #layout-row { margin-top: 80px; }
+  #layout-billboard + #layout-row #main-frame header { top: 80px; }
+  /* Pages sans billboard (formulaires) : pas de décalage */
+  #layout-billboard-absent + #layout-row { margin-top: 0; }
+  #layout-billboard-absent + #layout-row #main-frame header { top: 0; }
 
   /* ── 3. LAYOUT — sidebar supprimée, contenu 100% largeur ─────── */
   #right-sidebar-pubs { display: none !important; }
@@ -2561,8 +2565,8 @@ img.loaded     { opacity: 1; }
   #layout-billboard .pub-bg-fixed     { height: 56px !important; }
   #layout-billboard .pub-bg-fixed-img { height: 56px !important; }
   #layout-billboard .pub-bg-fixed-link{ height: 56px !important; }
-  #layout-row { margin-top: 56px; }
-  #main-frame header { top: 56px; }
+  #layout-billboard + #layout-row { margin-top: 56px; }
+  #layout-billboard + #layout-row #main-frame header { top: 56px; }
   header .flex.items-center.h-16 { height: 48px; }
   .bottom-nav { height: 50px; }
   .bottom-nav__item { height: 50px; }
