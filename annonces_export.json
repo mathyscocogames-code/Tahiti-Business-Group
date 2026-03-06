@@ -1,0 +1,321 @@
+[
+  {
+    "titre": "Voiture hybride — Capture Hybride",
+    "description": "Renault Capture hybride en excellent état. Faible kilométrage, entretien suivi, première main. Idéale pour la ville et les longues distances.",
+    "prix": 2900000,
+    "prix_label": "",
+    "categorie": "vehicules",
+    "sous_categorie": "vehicules-4x4",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/49f8b399e7.webp",
+      "/media/annonces/8de5612a5f.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Citroën C3 — Très bon état",
+    "description": "Citroën C3 en très bon état général. Climatisation, faible consommation. Parfaite pour la ville de Papeete.",
+    "prix": 1200000,
+    "prix_label": "",
+    "categorie": "vehicules",
+    "sous_categorie": "vehicules-4x4",
+    "localisation": "Faa'a",
+    "photos": [
+      "/media/annonces/c00022ab87.webp",
+      "/media/annonces/a9af7b19a8.webp",
+      "/media/annonces/51fce098ad.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "DFM Joyear — Utilitaire",
+    "description": "DFM Joyear utilitaire, idéal pour les professionnels. Cabine double, benne, robuste et économique.",
+    "prix": 1800000,
+    "prix_label": "",
+    "categorie": "vehicules",
+    "sous_categorie": "vehicules-utilitaires",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/2d40c4311f.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Renault Kadjar — SUV familial",
+    "description": "Renault Kadjar SUV familial, finition Intens. GPS, caméra de recul, toit panoramique. Parfait état.",
+    "prix": 2200000,
+    "prix_label": "",
+    "categorie": "vehicules",
+    "sous_categorie": "vehicules-4x4",
+    "localisation": "Pirae",
+    "photos": [
+      "/media/annonces/62f9e4f39e.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "PC Lenovo — Workstation Pro",
+    "description": "PC Lenovo Workstation haute performance. Idéal pour le travail, le graphisme et le montage vidéo. État impeccable avec facture.",
+    "prix": 450000,
+    "prix_label": "",
+    "categorie": "electronique",
+    "sous_categorie": "elec-pc",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/c30d78992e.webp",
+      "/media/annonces/4e8a19c8a8.webp",
+      "/media/annonces/74cf757da5.webp",
+      "/media/annonces/403b6280d9.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Peugeot — Citadine économique",
+    "description": "Peugeot en très bon état, faible kilométrage. Parfaite pour les déplacements quotidiens en ville. Entretien à jour.",
+    "prix": 950000,
+    "prix_label": "",
+    "categorie": "vehicules",
+    "sous_categorie": "vehicules-4x4",
+    "localisation": "Mahina",
+    "photos": [
+      "/media/annonces/3c9a04d120.webp",
+      "/media/annonces/fce9ee6054.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Air Fryer — Friteuse sans huile",
+    "description": "Friteuse a air chaud, capacite 4L. Parfaite pour cuisiner sainement sans huile. Excellent etat, peu utilisee.",
+    "prix": 15000,
+    "prix_label": "",
+    "categorie": "electronique",
+    "sous_categorie": "elec-electromenager",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/d76fe1d7e6.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "F2 a louer — Punaauia",
+    "description": "Bel appartement F2 lumineux a Punaauia. Cuisine equipee, salle de bain, parking. Proche commerces et transports.",
+    "prix": 75000,
+    "prix_label": "",
+    "categorie": "immobilier",
+    "sous_categorie": "immo-appartements",
+    "localisation": "Punaauia",
+    "photos": [
+      "/media/annonces/1ab9251ee8.webp",
+      "/media/annonces/d2661df933.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Recherche Agent Commercial Immobilier",
+    "description": "Agence immobiliere recrute agent commercial independant. Portefeuille clients existant, formation assuree. Remuneration a la commission attractive.",
+    "prix": 0,
+    "prix_label": "Commission",
+    "categorie": "emploi",
+    "sous_categorie": "emploi-commerciaux",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/4166d8a0b5.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Agent Immobilier — Offre emploi",
+    "description": "Cabinet immobilier recherche agent immobilier experimente. CDI, salaire fixe + commissions. Gestion de biens residentiels et commerciaux en Polynesie.",
+    "prix": 200000,
+    "prix_label": "",
+    "categorie": "emploi",
+    "sous_categorie": "emploi-commerciaux",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/8ef484d857.webp",
+      "/media/annonces/eba907ad5a.webp",
+      "/media/annonces/c0bd038388.webp",
+      "/media/annonces/00d2b1b15e.webp",
+      "/media/annonces/f84b2228b5.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Animateur Commercial — CDD",
+    "description": "Entreprise recherche animateur commercial pour promotions en grande surface. CDD 3 mois renouvelable, dynamique et souriant(e) bienvenu(e).",
+    "prix": 170000,
+    "prix_label": "",
+    "categorie": "emploi",
+    "sous_categorie": "emploi-commerciaux",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/dbc5dd1d47.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Appartement T3 — A louer Papeete",
+    "description": "Grand appartement T3 en centre-ville de Papeete. Vue mer partielle, climatisation, securise. Proche de toutes commodites.",
+    "prix": 95000,
+    "prix_label": "",
+    "categorie": "immobilier",
+    "sous_categorie": "immo-appartements",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/070d32e87c.webp",
+      "/media/annonces/a3d1904b3e.webp",
+      "/media/annonces/fcaf2fe430.webp",
+      "/media/annonces/3a6089dcc1.webp",
+      "/media/annonces/02c57cbc04.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Appartement F2 — Location meublee",
+    "description": "F2 entierement meuble et equipe, ideal pour une personne ou un couple. Calme, lumineux, acces rapide au centre.",
+    "prix": 80000,
+    "prix_label": "",
+    "categorie": "immobilier",
+    "sous_categorie": "immo-appartements",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/732f4d2e22.webp",
+      "/media/annonces/ed5905fade.webp",
+      "/media/annonces/4470f6d1a9.webp",
+      "/media/annonces/fa67295447.webp",
+      "/media/annonces/466c203371.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Canapé convertible — Très bon état",
+    "description": "Canapé 3 places convertible en lit, tissu gris chiné. Mécanisme fluide, couchage confortable. Peu utilisé.",
+    "prix": 35000,
+    "prix_label": "",
+    "categorie": "autres",
+    "sous_categorie": "autres-meubles",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/47a8e878ec.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Canapé d'angle — Simili cuir",
+    "description": "Grand canapé d'angle en simili cuir noir, 5 places. Confortable et en bon état. Idéal pour grand salon.",
+    "prix": 55000,
+    "prix_label": "",
+    "categorie": "autres",
+    "sous_categorie": "autres-meubles",
+    "localisation": "Faa'a",
+    "photos": [
+      "/media/annonces/493ba47cb3.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Lot de 4 chaises salle à manger",
+    "description": "Lot de 4 chaises design pour salle à manger. Structure métal, assise rembourrée. Prix pour le lot complet.",
+    "prix": 12000,
+    "prix_label": "",
+    "categorie": "autres",
+    "sous_categorie": "autres-meubles",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/f36d909268.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Conseiller Immobilier — CDI",
+    "description": "Agence immobilière de renom recrute conseiller immobilier confirmé. Gestion portefeuille clients, prospection, visites. Véhicule de service fourni.",
+    "prix": 220000,
+    "prix_label": "",
+    "categorie": "emploi",
+    "sous_categorie": "emploi-commerciaux",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/571a2a538a.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "iPad Air — Comme neuf 256 Go",
+    "description": "iPad Air 5e génération, 256 Go, WiFi + Cellular. Très peu utilisé, vendu avec chargeur et étui de protection.",
+    "prix": 85000,
+    "prix_label": "",
+    "categorie": "electronique",
+    "sous_categorie": "elec-ordinateurs",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/a239043af6.webp",
+      "/media/annonces/755e40b497.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Lot 2 vasques à poser — Neuves",
+    "description": "Lot de 2 vasques rondes à poser, céramique blanche. Diamètre 40cm. Jamais installées, encore dans leur emballage.",
+    "prix": 18000,
+    "prix_label": "",
+    "categorie": "autres",
+    "sous_categorie": "autres-divers",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/6a838b348f.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "PC Gamer — RTX 4090 / 64 Go DDR5",
+    "description": "PC gaming haut de gamme : RTX 4090, 64 Go DDR5, SSD NVMe 2 To. Watercooling AIO 360mm. Performances exceptionnelles pour gaming 4K et montage vidéo.",
+    "prix": 650000,
+    "prix_label": "",
+    "categorie": "electronique",
+    "sous_categorie": "elec-pc",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/65bef33a88.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  },
+  {
+    "titre": "Studio meublé — Location Papeete",
+    "description": "Studio entièrement meublé et équipé au centre de Papeete. Cuisine américaine, salle d'eau, climatisé. Idéal étudiant ou jeune actif.",
+    "prix": 60000,
+    "prix_label": "",
+    "categorie": "immobilier",
+    "sous_categorie": "immo-appartements",
+    "localisation": "Papeete",
+    "photos": [
+      "/media/annonces/d2ed60d837.webp",
+      "/media/annonces/4fc7e1ec01.webp",
+      "/media/annonces/65ceaa3572.webp",
+      "/media/annonces/5c8ccd9fb3.webp",
+      "/media/annonces/cbfc5ef20d.webp"
+    ],
+    "statut": "actif",
+    "boost": false
+  }
+]
