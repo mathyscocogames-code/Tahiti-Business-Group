@@ -65,16 +65,32 @@
             <label class="block text-sm text-muted mb-1">{{ form.whatsapp.label }}</label>
             {{ form.whatsapp }}
           </div>
+
+          <!-- Photo de profil stylisee -->
           <div>
-            <label class="block text-sm text-muted mb-1">Photo de profil</label>
-            {% if user.avatar %}
-            <div class="flex items-center gap-3 mb-2">
-              <img src="{{ user.avatar.url }}" alt="Avatar actuel" class="w-10 h-10 rounded-full object-cover" loading="lazy">
-              <span class="text-xs text-muted">Photo actuelle</span>
-            </div>
-            {% endif %}
-            {{ form.avatar }}
+            <label class="block text-sm text-muted mb-2">Photo de profil</label>
+            <label class="avatar-upload" id="avatarUploadLabel">
+              <input type="file" name="avatar" accept="image/*" class="hidden" id="avatarInput" onchange="previewAvatar(this)">
+              <div class="avatar-upload__preview" id="avatarPreview">
+                {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                {% else %}
+                <div class="w-full h-full bg-gray-100 rounded-full flex items-center justify-center text-3xl text-gray-400">
+                  {{ user.nom|first|upper|default:user.email|first|upper }}
+                </div>
+                {% endif %}
+                <div class="avatar-upload__overlay">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span class="text-xs font-semibold mt-1">Changer</span>
+                </div>
+              </div>
+              <span class="text-sm text-gray-500 mt-2" id="avatarFileName">Cliquer pour choisir une photo</span>
+            </label>
           </div>
+
           <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white font-semibold py-2.5 rounded-xl transition text-sm">
             Sauvegarder
           </button>
@@ -97,13 +113,13 @@
       </div>
     </div>
 
-    <!-- Annonces + Messages -->
+    <!-- Annonces + Favoris + Messages -->
     <div class="lg:col-span-2 space-y-6">
 
-      <!-- Mes annonces récentes -->
+      <!-- Mes annonces recentes -->
       <div class="bg-card border border-border rounded-2xl p-6">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="font-bold text-lg">Mes annonces récentes</h2>
+          <h2 class="font-bold text-lg">Mes annonces recentes</h2>
           <a href="{% url 'mes_annonces' %}" class="text-sm text-primary hover:text-accent transition">Voir tout →</a>
         </div>
         {% if annonces %}
@@ -139,15 +155,34 @@
           <div class="text-4xl mb-2">📭</div>
           <p class="text-sm">Aucune annonce</p>
           <a href="{% url 'deposer_annonce' %}" class="mt-3 inline-block text-xs bg-accent text-dark font-bold px-4 py-2 rounded-lg hover:bg-green-400 transition">
-            Déposer une annonce
+            Deposer une annonce
           </a>
         </div>
         {% endif %}
       </div>
 
-      <!-- Messages reçus -->
+      <!-- Mes favoris -->
       <div class="bg-card border border-border rounded-2xl p-6">
-        <h2 class="font-bold text-lg mb-4">Messages reçus</h2>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-lg flex items-center gap-2">
+            <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+            Mes favoris
+          </h2>
+          <a href="{% url 'mes_favoris' %}" class="text-sm text-primary hover:text-accent transition">Voir tout →</a>
+        </div>
+        <div id="favorisContainer">
+          <div class="text-center py-6 text-muted">
+            <div class="text-3xl mb-2">⏳</div>
+            <p class="text-sm">Chargement...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages recus -->
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <h2 class="font-bold text-lg mb-4">Messages recus</h2>
         {% if messages_recus %}
         <div class="space-y-3">
           {% for msg in messages_recus %}
@@ -167,7 +202,7 @@
         {% else %}
         <div class="text-center py-8 text-muted">
           <div class="text-4xl mb-2">💬</div>
-          <p class="text-sm">Aucun message reçu</p>
+          <p class="text-sm">Aucun message recu</p>
         </div>
         {% endif %}
       </div>
@@ -175,4 +210,110 @@
     </div>
   </div>
 </div>
+
+<style>
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+.avatar-upload__preview {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #e5e7eb;
+  transition: border-color .2s;
+}
+.avatar-upload:hover .avatar-upload__preview {
+  border-color: #1a6cf1;
+}
+.avatar-upload__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  transition: opacity .2s;
+  border-radius: 50%;
+}
+.avatar-upload:hover .avatar-upload__overlay {
+  opacity: 1;
+}
+</style>
+
+<script>
+// Preview avatar avant upload
+function previewAvatar(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('avatarPreview').innerHTML =
+        '<img src="' + e.target.result + '" alt="Preview" class="w-full h-full object-cover rounded-full">' +
+        document.querySelector('.avatar-upload__overlay').outerHTML;
+    };
+    reader.readAsDataURL(input.files[0]);
+    document.getElementById('avatarFileName').textContent = input.files[0].name;
+  }
+}
+
+// Charger les favoris depuis localStorage
+(function() {
+  var ids = JSON.parse(localStorage.getItem('tbg_favoris') || '[]');
+  var container = document.getElementById('favorisContainer');
+  if (!ids.length) {
+    container.innerHTML =
+      '<div class="text-center py-6 text-muted">' +
+        '<div class="text-3xl mb-2">❤️</div>' +
+        '<p class="text-sm">Aucun favori pour le moment</p>' +
+        '<p class="text-xs text-gray-400 mt-1">Cliquez sur le coeur d\'une annonce pour l\'ajouter</p>' +
+      '</div>';
+    return;
+  }
+  // Charger les 6 premiers favoris via l'API
+  var showIds = ids.slice(0, 6);
+  fetch('/mes-favoris/?ids=' + showIds.join(','), {
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+  .then(function(r) { return r.text(); })
+  .then(function(html) {
+    // Parser le HTML pour extraire les annonces
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(html, 'text/html');
+    var cards = doc.querySelectorAll('.ad-card');
+    if (!cards.length) {
+      // Fallback: afficher un lien
+      container.innerHTML =
+        '<div class="text-center py-4">' +
+          '<p class="text-sm text-gray-500 mb-2">' + ids.length + ' annonce(s) en favoris</p>' +
+          '<a href="/mes-favoris/" class="text-sm text-primary font-semibold hover:underline">Voir mes favoris →</a>' +
+        '</div>';
+      return;
+    }
+    var grid = document.createElement('div');
+    grid.className = 'grid grid-cols-2 sm:grid-cols-3 gap-3';
+    cards.forEach(function(card, i) {
+      if (i >= 6) return;
+      // Miniaturiser la carte
+      card.style.fontSize = '12px';
+      grid.appendChild(card);
+    });
+    container.innerHTML = '';
+    container.appendChild(grid);
+  })
+  .catch(function() {
+    container.innerHTML =
+      '<div class="text-center py-4">' +
+        '<p class="text-sm text-gray-500 mb-2">' + ids.length + ' annonce(s) en favoris</p>' +
+        '<a href="/mes-favoris/" class="text-sm text-primary font-semibold hover:underline">Voir mes favoris →</a>' +
+      '</div>';
+  });
+})();
+</script>
 {% endblock %}
