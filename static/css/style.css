@@ -123,13 +123,13 @@ textarea.form-input       { resize: vertical; min-height: 100px; }
 
 /* ── Logo header ─────────────────────────────────────────────── */
 .logo-header {
-  height: 54px;
+  height: 60px;
   width: auto;
   display: block;
   transition: opacity .15s;
 }
 .logo-header:hover { opacity: .82; }
-@media (max-width: 640px) { .logo-header { height: 42px; } }
+@media (max-width: 640px) { .logo-header { height: 48px; } }
 
 /* ── Header shadow ───────────────────────────────────────────── */
 .header-shadow {
@@ -1368,14 +1368,14 @@ img.loaded     { opacity: 1; }
   header form[method="get"] { min-width: 0; }
   /* Compact header height (64px → 56px) and tighter gap (12px → 8px) */
   header .flex.items-center.h-16 { height: 56px; gap: 8px; }
-  /* Logo: never wider than 88px on mobile, preserves search space */
-  header .logo-header { max-width: 88px; }
+  /* Logo: cap width on mobile, preserves search space */
+  header .logo-header { max-width: 120px; }
   /* search button: trim padding on mobile */
   header .search-bar__btn { padding: 0 12px; }
 }
 @media (max-width: 400px) {
   header .flex.items-center.h-16 { gap: 6px; padding-left: 12px; padding-right: 12px; }
-  header .logo-header { max-width: 76px; }
+  header .logo-header { max-width: 100px; }
 }
 
 /* ── Bottom navigation bar ───────────────────────────────────── */
@@ -1489,8 +1489,8 @@ img.loaded     { opacity: 1; }
   #cat-zone-2 { display: none; }
   /* Messages icon in header hidden on mobile — bottom nav has it */
   .msg-icon-header { display: none; }
-  /* Cap logo on very small screens for more search space */
-  .logo-header { max-width: 96px; }
+  /* Cap logo on small screens for more search space */
+  .logo-header { max-width: 120px; }
 }
 
 /* ── Slide menu overlay ──────────────────────────────────────── */
@@ -2567,8 +2567,8 @@ img.loaded     { opacity: 1; }
 
 /* ── HEADER FLUIDE — logo & hauteur s'adaptent en continu ────── */
 @media (max-width: 767px) {
-  /* Logo : clamp(64px → scale → 96px) selon la largeur */
-  header .logo-header { max-width: clamp(64px, 20vw, 96px); }
+  /* Logo : clamp(80px → scale → 120px) selon la largeur */
+  header .logo-header { max-width: clamp(80px, 28vw, 120px); }
   /* Annule le ml-4 Tailwind du lien logo sur très petits écrans */
   header a.flex-shrink-0 { margin-left: clamp(0px, 2vw, 16px) !important; margin-right: clamp(2px, 1vw, 8px) !important; }
   /* Padding horizontal du container header */
