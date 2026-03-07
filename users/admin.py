@@ -28,7 +28,7 @@ class UserAdmin(BaseUserAdmin):
 
     fieldsets = (
         ('Identifiants', {'fields': ('email', 'password')}),
-        ('Infos personnelles', {'fields': ('nom', 'tel', 'whatsapp', 'avatar')}),
+        ('Infos personnelles', {'fields': ('nom', 'tel', 'avatar')}),
         ('Compte Pro', {'fields': ('nom_entreprise', 'numero_tahiti', 'abonnement_promo_actif')}),
         ('Rôle & Permissions', {'fields': ('role', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Dates', {'fields': ('date_joined', 'last_login')}),

@@ -106,7 +106,7 @@ def deposer_nouveaute(request):
         'couleur':       'emerald',
         'bouton_label':  'Publier la nouveauté',
         'lien_label':    'Lien de redirection (optionnel)',
-        'lien_placeholder': 'https://votre-site.pf ou page Facebook/Instagram',
+        'lien_placeholder': 'https://votre-site.pf ou page Instagram',
         'titre_placeholder': 'Ex : Nouveau restaurant Poke Tahiti à Mahina — ouverture vendredi',
         'contenu_placeholder': 'Décrivez votre nouveauté : lieu, service, horaires, contact...',
         'regles': "Nouveautés commerciales réelles uniquement. Si votre publication contient une réduction → utilisez la rubrique Promo.",

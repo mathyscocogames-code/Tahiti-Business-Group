@@ -90,9 +90,8 @@ class RegisterForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['nom', 'tel', 'whatsapp', 'avatar']
+        fields = ['nom', 'tel', 'avatar']
         widgets = {
             'nom': forms.TextInput(attrs={'class': 'form-input'}),
             'tel': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '89 XX XX XX'}),
-            'whatsapp': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '689 89 XX XX XX'}),
         }
