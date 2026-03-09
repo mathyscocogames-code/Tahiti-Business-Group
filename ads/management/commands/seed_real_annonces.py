@@ -1,7 +1,12 @@
-"""python manage.py seed_real_annonces — importe les vraies annonces TBG en production."""
+"""python manage.py seed_real_annonces — importe les vraies annonces TBG avec upload S3."""
+import os
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from ads.models import Annonce
+from ads.image_utils import save_webp
+
+BASE_IMG = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))))), 'img')
 
 ANNONCES = [
     {
@@ -10,7 +15,7 @@ ANNONCES = [
         "prix": 2900000, "prix_label": "",
         "categorie": "vehicules", "sous_categorie": "vehicules-4x4",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/49f8b399e7.webp", "/media/annonces/8de5612a5f.webp"],
+        "images": ["capture hybride.jpg", "capture hybride 2.jpg"],
     },
     {
         "titre": "Citro\u00ebn C3 \u2014 Tr\u00e8s bon \u00e9tat",
@@ -18,7 +23,7 @@ ANNONCES = [
         "prix": 1200000, "prix_label": "",
         "categorie": "vehicules", "sous_categorie": "vehicules-4x4",
         "localisation": "Faa'a",
-        "photos": ["/media/annonces/c00022ab87.webp", "/media/annonces/a9af7b19a8.webp", "/media/annonces/51fce098ad.webp"],
+        "images": ["citroen c3.jpg", "citroen c3 2.jpg", "citroen c3 3.jpg"],
     },
     {
         "titre": "DFM Joyear \u2014 Utilitaire",
@@ -26,7 +31,7 @@ ANNONCES = [
         "prix": 1800000, "prix_label": "",
         "categorie": "vehicules", "sous_categorie": "vehicules-utilitaires",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/2d40c4311f.webp"],
+        "images": ["dfm joyear.jpg"],
     },
     {
         "titre": "Renault Kadjar \u2014 SUV familial",
@@ -34,7 +39,7 @@ ANNONCES = [
         "prix": 2200000, "prix_label": "",
         "categorie": "vehicules", "sous_categorie": "vehicules-4x4",
         "localisation": "Pirae",
-        "photos": ["/media/annonces/62f9e4f39e.webp"],
+        "images": ["kadjar.jpg"],
     },
     {
         "titre": "PC Lenovo \u2014 Workstation Pro",
@@ -42,7 +47,7 @@ ANNONCES = [
         "prix": 450000, "prix_label": "",
         "categorie": "electronique", "sous_categorie": "elec-pc",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/c30d78992e.webp", "/media/annonces/4e8a19c8a8.webp", "/media/annonces/74cf757da5.webp", "/media/annonces/403b6280d9.webp"],
+        "images": ["lenovo 1.jpg", "lenovo 2.jpg", "lenovo 3.jpg", "lenovo 4.jpg"],
     },
     {
         "titre": "Peugeot \u2014 Citadine \u00e9conomique",
@@ -50,7 +55,7 @@ ANNONCES = [
         "prix": 950000, "prix_label": "",
         "categorie": "vehicules", "sous_categorie": "vehicules-4x4",
         "localisation": "Mahina",
-        "photos": ["/media/annonces/3c9a04d120.webp", "/media/annonces/fce9ee6054.webp"],
+        "images": ["peaugeot.jpg", "peaugeot 2.jpg"],
     },
     {
         "titre": "Air Fryer \u2014 Friteuse sans huile",
@@ -58,7 +63,7 @@ ANNONCES = [
         "prix": 15000, "prix_label": "",
         "categorie": "electronique", "sous_categorie": "elec-electromenager",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/d76fe1d7e6.webp"],
+        "images": ["Air fryer.jpg"],
     },
     {
         "titre": "F2 a louer \u2014 Punaauia",
@@ -66,7 +71,7 @@ ANNONCES = [
         "prix": 75000, "prix_label": "",
         "categorie": "immobilier", "sous_categorie": "immo-appartements",
         "localisation": "Punaauia",
-        "photos": ["/media/annonces/1ab9251ee8.webp", "/media/annonces/d2661df933.webp"],
+        "images": ["F2 punaauia.jpg", "F2 punaauia 2.jpg"],
     },
     {
         "titre": "Recherche Agent Commercial Immobilier",
@@ -74,7 +79,7 @@ ANNONCES = [
         "prix": 0, "prix_label": "Commission",
         "categorie": "emploi", "sous_categorie": "emploi-commerciaux",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/4166d8a0b5.webp"],
+        "images": ["agent commercial immo.jpg"],
     },
     {
         "titre": "Agent Immobilier \u2014 Offre emploi",
@@ -82,7 +87,7 @@ ANNONCES = [
         "prix": 200000, "prix_label": "",
         "categorie": "emploi", "sous_categorie": "emploi-commerciaux",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/8ef484d857.webp", "/media/annonces/eba907ad5a.webp", "/media/annonces/c0bd038388.webp", "/media/annonces/00d2b1b15e.webp", "/media/annonces/f84b2228b5.webp"],
+        "images": ["agent immo.jpg", "agent immo 2.jpg", "agent immo 3.jpg", "agent immo 4.jpg", "agent immo 5.jpg"],
     },
     {
         "titre": "Animateur Commercial \u2014 CDD",
@@ -90,7 +95,7 @@ ANNONCES = [
         "prix": 170000, "prix_label": "",
         "categorie": "emploi", "sous_categorie": "emploi-commerciaux",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/dbc5dd1d47.webp"],
+        "images": ["annimateur commercial.jpg"],
     },
     {
         "titre": "Appartement T3 \u2014 A louer Papeete",
@@ -98,7 +103,7 @@ ANNONCES = [
         "prix": 95000, "prix_label": "",
         "categorie": "immobilier", "sous_categorie": "immo-appartements",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/070d32e87c.webp", "/media/annonces/a3d1904b3e.webp", "/media/annonces/fcaf2fe430.webp", "/media/annonces/3a6089dcc1.webp", "/media/annonces/02c57cbc04.webp"],
+        "images": ["appart 1.jpg", "appart 2.jpg", "appart 3.jpg", "appart 4.jpg", "appart 5.jpg"],
     },
     {
         "titre": "Appartement F2 \u2014 Location meublee",
@@ -106,7 +111,7 @@ ANNONCES = [
         "prix": 80000, "prix_label": "",
         "categorie": "immobilier", "sous_categorie": "immo-appartements",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/732f4d2e22.webp", "/media/annonces/ed5905fade.webp", "/media/annonces/4470f6d1a9.webp", "/media/annonces/fa67295447.webp", "/media/annonces/466c203371.webp"],
+        "images": ["appart F2.jpg", "appart F2 2.jpg", "appart F2 3.jpg", "appart F2 4.jpg", "appart F2 5.jpg"],
     },
     {
         "titre": "Canap\u00e9 convertible \u2014 Tr\u00e8s bon \u00e9tat",
@@ -114,7 +119,7 @@ ANNONCES = [
         "prix": 35000, "prix_label": "",
         "categorie": "autres", "sous_categorie": "autres-meubles",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/47a8e878ec.webp"],
+        "images": ["canap\u00e9 convertible.jpg"],
     },
     {
         "titre": "Canap\u00e9 d'angle \u2014 Simili cuir",
@@ -122,7 +127,7 @@ ANNONCES = [
         "prix": 55000, "prix_label": "",
         "categorie": "autres", "sous_categorie": "autres-meubles",
         "localisation": "Faa'a",
-        "photos": ["/media/annonces/493ba47cb3.webp"],
+        "images": ["canap\u00e9.jpg"],
     },
     {
         "titre": "Lot de 4 chaises salle \u00e0 manger",
@@ -130,7 +135,7 @@ ANNONCES = [
         "prix": 12000, "prix_label": "",
         "categorie": "autres", "sous_categorie": "autres-meubles",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/f36d909268.webp"],
+        "images": ["chaises.jpg"],
     },
     {
         "titre": "Conseiller Immobilier \u2014 CDI",
@@ -138,7 +143,7 @@ ANNONCES = [
         "prix": 220000, "prix_label": "",
         "categorie": "emploi", "sous_categorie": "emploi-commerciaux",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/571a2a538a.webp"],
+        "images": ["conseiller immo.jpg"],
     },
     {
         "titre": "iPad Air \u2014 Comme neuf 256 Go",
@@ -146,7 +151,7 @@ ANNONCES = [
         "prix": 85000, "prix_label": "",
         "categorie": "electronique", "sous_categorie": "elec-ordinateurs",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/a239043af6.webp", "/media/annonces/755e40b497.webp"],
+        "images": ["ipad air.jpg", "ipad air 2.jpg"],
     },
     {
         "titre": "Lot 2 vasques \u00e0 poser \u2014 Neuves",
@@ -154,7 +159,7 @@ ANNONCES = [
         "prix": 18000, "prix_label": "",
         "categorie": "autres", "sous_categorie": "autres-divers",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/6a838b348f.webp"],
+        "images": ["lot 2 vasques.jpg"],
     },
     {
         "titre": "PC Gamer \u2014 RTX 4090 / 64 Go DDR5",
@@ -162,7 +167,7 @@ ANNONCES = [
         "prix": 650000, "prix_label": "",
         "categorie": "electronique", "sous_categorie": "elec-pc",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/65bef33a88.webp"],
+        "images": ["pc gamer rtx 4090 64 GIGA DDR5.jpg"],
     },
     {
         "titre": "Studio meubl\u00e9 \u2014 Location Papeete",
@@ -170,15 +175,39 @@ ANNONCES = [
         "prix": 60000, "prix_label": "",
         "categorie": "immobilier", "sous_categorie": "immo-appartements",
         "localisation": "Papeete",
-        "photos": ["/media/annonces/d2ed60d837.webp", "/media/annonces/4fc7e1ec01.webp", "/media/annonces/65ceaa3572.webp", "/media/annonces/5c8ccd9fb3.webp", "/media/annonces/cbfc5ef20d.webp"],
+        "images": ["studio 1.jpg", "studio 2.jpg", "studio 3.jpg", "studio 4.jpg", "studio 5.jpg"],
     },
 ]
 
 
+def _upload_images(annonce, image_files, stdout):
+    """Upload les images source vers S3/local via save_webp et retourne les URLs."""
+    urls = []
+    for img_name in image_files:
+        img_path = os.path.join(BASE_IMG, img_name)
+        if not os.path.exists(img_path):
+            stdout.write(f"    [WARN] Image introuvable : {img_name}")
+            continue
+        with open(img_path, 'rb') as f:
+            from django.core.files.uploadedfile import InMemoryUploadedFile
+            import io
+            data = f.read()
+            fobj = InMemoryUploadedFile(
+                io.BytesIO(data), 'photo', img_name, 'image/jpeg', len(data), None
+            )
+            url = save_webp(fobj, 'annonces', f'{annonce.pk}')
+            urls.append(url)
+    return urls
+
+
 class Command(BaseCommand):
-    help = 'Importe les 21 vraies annonces TBG en production'
+    help = 'Importe les 21 vraies annonces TBG avec upload S3'
 
     def handle(self, *args, **options):
+        import os as _os
+        bucket = _os.environ.get('AWS_STORAGE_BUCKET_NAME', '')
+        self.stdout.write(f"S3 bucket: {'[' + bucket + ']' if bucket else 'NON CONFIGURE (local)'}")
+
         User = get_user_model()
         user = User.objects.filter(email='admin@tahitibusinessgroup.com').first()
         if not user:
@@ -186,11 +215,29 @@ class Command(BaseCommand):
             return
 
         created = 0
+        updated = 0
         for data in ANNONCES:
-            if Annonce.objects.filter(titre=data['titre']).exists():
-                self.stdout.write(f'  ~ Existante : {data["titre"][:55]}')
+            annonce = Annonce.objects.filter(titre=data['titre']).first()
+            if annonce:
+                # Verifier si les photos pointent vers /media/ (local, perdu sur Railway)
+                needs_reupload = (
+                    not annonce.photos
+                    or any(p.startswith('/media/') for p in annonce.photos)
+                )
+                if needs_reupload and data.get('images'):
+                    urls = _upload_images(annonce, data['images'], self.stdout)
+                    if urls:
+                        annonce.photos = urls
+                        annonce.save()
+                        updated += 1
+                        self.stdout.write(f'  ~ MAJ photos : {data["titre"][:50]} ({len(urls)} photos)')
+                    else:
+                        self.stdout.write(f'  ~ Existante (pas d\'images source) : {data["titre"][:55]}')
+                else:
+                    self.stdout.write(f'  ~ OK : {data["titre"][:55]}')
                 continue
-            Annonce.objects.create(
+
+            annonce = Annonce.objects.create(
                 user=user,
                 titre=data['titre'],
                 description=data['description'],
@@ -199,11 +246,19 @@ class Command(BaseCommand):
                 categorie=data['categorie'],
                 sous_categorie=data['sous_categorie'],
                 localisation=data['localisation'],
-                photos=data['photos'],
+                photos=[],
                 statut='actif',
                 boost=False,
             )
+            if data.get('images'):
+                urls = _upload_images(annonce, data['images'], self.stdout)
+                annonce.photos = urls
+                annonce.save()
+                self.stdout.write(f'  + {data["titre"][:50]} ({len(urls)} photos)')
+            else:
+                self.stdout.write(f'  + {data["titre"][:50]} (sans photos)')
             created += 1
-            self.stdout.write(f'  + {data["titre"][:60]}')
 
-        self.stdout.write(self.style.SUCCESS(f'\n[OK] {created} annonces importées.'))
+        self.stdout.write(self.style.SUCCESS(
+            f'\n[OK] {created} creees, {updated} photos mises a jour.'
+        ))

@@ -178,20 +178,37 @@ PROMOS = [
 
 
 class Command(BaseCommand):
-    help = 'Supprime toutes les rubriques et cree 9 vrais articles avec photos'
+    help = 'Cree les rubriques de demo si elles n\'existent pas (idempotent)'
 
     def add_arguments(self, parser):
         parser.add_argument('--reset', action='store_true',
-                            help='(legacy) Meme effet que sans flag : reset complet')
+                            help='Supprime tout et recree depuis zero')
 
     def handle(self, *args, **options):
-        # Supprimer toutes les rubriques
-        d1 = ArticleInfo.objects.all().delete()
-        d2 = ArticleNouveaute.objects.all().delete()
-        d3 = ArticlePromo.objects.all().delete()
-        self.stdout.write(self.style.WARNING(
-            f"Supprime: {d1[0]} infos, {d2[0]} nouveautes, {d3[0]} promos"
-        ))
+        import os
+        bucket = os.environ.get('AWS_STORAGE_BUCKET_NAME', '')
+        self.stdout.write(f"S3 bucket: {'[' + bucket + ']' if bucket else 'NON CONFIGURE (local)'}")
+
+        # Si --reset, tout supprimer
+        if options.get('reset'):
+            d1 = ArticleInfo.objects.all().delete()
+            d2 = ArticleNouveaute.objects.all().delete()
+            d3 = ArticlePromo.objects.all().delete()
+            self.stdout.write(self.style.WARNING(
+                f"Supprime: {d1[0]} infos, {d2[0]} nouveautes, {d3[0]} promos"
+            ))
+
+        # Si les rubriques existent deja, ne rien faire
+        if (ArticleInfo.objects.filter(statut='valide').exists()
+                and ArticleNouveaute.objects.filter(statut='valide').exists()
+                and ArticlePromo.objects.filter(statut='valide').exists()):
+            self.stdout.write(self.style.SUCCESS(
+                f"[OK] Rubriques deja presentes "
+                f"({ArticleInfo.objects.count()} infos, "
+                f"{ArticleNouveaute.objects.count()} nouveautes, "
+                f"{ArticlePromo.objects.count()} promos). Rien a faire."
+            ))
+            return
 
         # Trouver un admin ou pro user
         user = (
