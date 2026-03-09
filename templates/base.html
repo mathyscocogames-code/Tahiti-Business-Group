@@ -174,10 +174,6 @@
             <a href="{% url 'mon_compte' %}">Mon compte</a>
             <a href="{% url 'mes_annonces' %}">Mes annonces</a>
             <a href="{% url 'mes_favoris' %}">Mes favoris</a>
-            {% if user.is_staff %}
-            <a href="{% url 'admin_dashboard' %}" class="user-menu-admin">Dashboard admin</a>
-            <a href="/admin/" class="user-menu-django">Django Admin</a>
-            {% endif %}
             <div class="user-menu-sep">
               <a href="{% url 'logout' %}" class="user-menu-logout">Déconnexion</a>
             </div>
