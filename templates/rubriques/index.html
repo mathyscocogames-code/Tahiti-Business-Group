@@ -49,7 +49,7 @@
       {% for p in promos %}
       <a href="{% url 'promo_detail' p.pk %}" class="article-card">
         <div class="article-card__image">
-          <span class="article-card__emoji">💰</span>
+          {% if p.photo %}<img src="{{ p.photo }}" alt="{{ p.titre }}" loading="lazy">{% else %}<span class="article-card__emoji">💰</span>{% endif %}
         </div>
         <div class="article-card__body">
           <span class="article-card__badge">Promo</span>
@@ -86,7 +86,7 @@
       {% for a in infos %}
       <a href="{% url 'info_detail' a.pk %}" class="article-card">
         <div class="article-card__image">
-          <span class="article-card__emoji">📰</span>
+          {% if a.photo %}<img src="{{ a.photo }}" alt="{{ a.titre }}" loading="lazy">{% else %}<span class="article-card__emoji">📰</span>{% endif %}
         </div>
         <div class="article-card__body">
           <span class="article-card__badge">Info</span>
@@ -124,7 +124,7 @@
       {% for n in nouveautes %}
       <a href="{% url 'nouveaute_detail' n.pk %}" class="article-card">
         <div class="article-card__image">
-          <span class="article-card__emoji">🚀</span>
+          {% if n.photo %}<img src="{{ n.photo }}" alt="{{ n.titre }}" loading="lazy">{% else %}<span class="article-card__emoji">🚀</span>{% endif %}
         </div>
         <div class="article-card__body">
           <span class="article-card__badge">Nouveauté</span>
