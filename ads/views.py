@@ -138,15 +138,21 @@ def index(request):
     annonces_recentes = qs[:10]
     total_count = base.count()
 
-    annonces_par_cat = {}
-    for code, label in CATEGORIES:
+    # Ordre d'affichage : immobilier, véhicules, puis le reste
+    cat_order = ['immobilier', 'vehicules'] + [
+        code for code, _ in CATEGORIES if code not in ('immobilier', 'vehicules')
+    ]
+    cat_labels = dict(CATEGORIES)
+    annonces_par_cat = []
+    for code in cat_order:
         cat_qs = _apply_boost_sort(
             Annonce.objects.filter(statut='actif', categorie=code).select_related('user')
         )
-        annonces_par_cat[code] = {
-            'label': label,
+        annonces_par_cat.append({
+            'code': code,
+            'label': cat_labels[code],
             'annonces': list(cat_qs[:10]),
-        }
+        })
 
     promos_home     = ArticlePromo.objects.filter(statut='valide').select_related('pro_user')[:10]
     infos_home      = ArticleInfo.objects.filter(statut='valide').select_related('auteur')[:4]
