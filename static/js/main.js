@@ -20,26 +20,32 @@ function showToast(msg, type = 'info') {
   }, 3800);
 }
 
-// ── Lazy image loading (IntersectionObserver) ──────────────────
+// ── Lazy image loading (scroll-based for #main-frame compat) ───
 function initLazyImages() {
-  const imgs = document.querySelectorAll('img[data-src]');
+  var imgs = document.querySelectorAll('img[data-src]');
   if (!imgs.length) return;
 
-  const scrollRoot = document.getElementById('main-frame') || null;
+  var scrollEl = document.getElementById('main-frame') || null;
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        img.src = img.dataset.src;
-        img.removeAttribute('data-src');
-        img.onload = () => img.classList.add('loaded');
-        observer.unobserve(img);
-      }
+  function loadImg(img) {
+    if (!img.dataset.src) return;
+    img.src = img.dataset.src;
+    img.removeAttribute('data-src');
+    img.onload = function() { img.classList.add('loaded'); };
+  }
+
+  function check() {
+    var viewH = scrollEl ? scrollEl.clientHeight : window.innerHeight;
+    imgs.forEach(function(img) {
+      if (!img.dataset.src) return;
+      var rect = img.getBoundingClientRect();
+      if (rect.top < viewH + 300 && rect.bottom > -300) loadImg(img);
     });
-  }, { root: scrollRoot, rootMargin: '200px 0px' });
+  }
 
-  imgs.forEach(img => observer.observe(img));
+  check();
+  (scrollEl || window).addEventListener('scroll', check, { passive: true });
+  setTimeout(check, 500);
 }
 
 // ── Auto-dismiss Django messages ───────────────────────────────
@@ -53,33 +59,11 @@ function initAutoDismissMessages() {
   }, 5000);
 }
 
-// ── Card entrance animation ────────────────────────────────────
+// ── Card entrance animation (CSS-only, no IntersectionObserver) ─
 function initCardAnimations() {
-  const cards = document.querySelectorAll('.ad-card');
-  if (!cards.length) return;
-
-  // Sur desktop, les cards sont dans #main-frame (conteneur scrollable).
-  // Il faut utiliser ce conteneur comme root pour que l'observer détecte les cards.
-  const scrollRoot = document.getElementById('main-frame') || null;
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-        }, i * 40);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { root: scrollRoot, rootMargin: '50px 0px -40px 0px' });
-
-  cards.forEach(card => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = 'opacity .4s ease, transform .4s ease';
-    observer.observe(card);
-  });
+  // Animation pure CSS pour éviter le bug opacity:0 avec #main-frame
+  var cards = document.querySelectorAll('.ad-card');
+  cards.forEach(function(card) { card.classList.add('ad-card--visible'); });
 }
 
 // ── Photo gallery ──────────────────────────────────────────────
