@@ -11,6 +11,14 @@
     <!-- CONTENU PRINCIPAL -->
     <div class="layout-main">
 
+      <!-- ── EN-TÊTE RUBRIQUES TBG ── -->
+      {% if infos_home or nouveautes_home or promos_home %}
+      <div class="over-img flex items-center justify-between mb-5 pb-3 border-b-2 border-gray-900">
+        <h2 class="text-xl font-bold text-gray-900" style="font-family:Arial,Helvetica,sans-serif">Rubriques TBG</h2>
+        <a href="{% url 'rubriques_index' %}" class="text-xs font-bold text-gray-900 underline underline-offset-2">Voir tout →</a>
+      </div>
+      {% endif %}
+
       <!-- Annonces récentes -->
       <div class="over-img flex items-center justify-between mb-4">
         <h2 class="text-xl font-bold text-gray-900">Annonces récentes</h2>
@@ -170,124 +178,108 @@
 
       {% if forloop.counter == 2 %}
       {% with current_strip=pub_strip_2 %}{% include 'partials/_pub_strip.html' %}{% endwith %}
-      {% endif %}
-      {% if forloop.counter == 4 %}
-      {% with current_strip=pub_strip_3 %}{% include 'partials/_pub_strip.html' %}{% endwith %}
-      {% endif %}
 
-      {% endfor %}
-
-      <!-- ── RUBRIQUES (Info / Nouveauté) ── -->
-      {% if infos_home or nouveautes_home %}
+      <!-- ── ACTUALITÉS & INFOS (après immo + véhicules) ── -->
+      {% if infos_home %}
       <div class="mb-10">
-        <div class="over-img flex items-center justify-between mb-5 pb-3 border-b-2 border-gray-900">
-          <h2 class="text-xl font-bold text-gray-900" style="font-family:Arial,Helvetica,sans-serif">Rubriques TBG</h2>
-          <a href="{% url 'rubriques_index' %}" class="text-xs font-bold text-gray-900 underline underline-offset-2">Voir tout →</a>
+        <div class="over-img flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-gray-900">📰 Actualités &amp; Infos</h2>
+          <a href="{% url 'rubriques_index' %}#info" class="text-sm text-sky-600 hover:text-sky-800 font-medium transition">Voir tout →</a>
         </div>
-
-        {% if infos_home %}
-        <div class="mb-6">
-          <div class="over-img flex items-center justify-between mb-4">
-            <h2 class="text-xl font-bold text-gray-900">📰 Actualités &amp; Infos</h2>
-            <a href="{% url 'rubriques_index' %}#info" class="text-sm text-sky-600 hover:text-sky-800 font-medium transition">Voir tout →</a>
-          </div>
-          <div class="cat-section-row">
-            <a href="{% url 'rubriques_index' %}#info" class="cat-label-card">
-              <div class="cat-label-card__img-wrap" style="background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-size:2.5rem">📰</div>
-              <div class="cat-label-card__title">Actualités locales</div>
-            </a>
-            <div class="cat-carousel-wrapper cat-section-row__carousel">
-              <div class="cat-carousel">
-                <div class="cat-carousel__track">
-                  {% for a in infos_home %}
-                  <div class="cat-carousel__item">
-                    <div class="info-card" data-href="{% url 'info_detail' a.pk %}" onclick="handleCardClick(this,event)">
-                      {% if a.photo %}<img src="{{ a.photo }}" alt="" class="info-card__photo" loading="lazy" onerror="this.style.display='none'">{% endif %}
-                      <span class="info-card__badge">📰 Info</span>
-                      <div class="info-card__title">{{ a.titre }}</div>
-                      <div class="info-card__preview">{{ a.contenu }}</div>
-                      <div class="info-card__expand">
-                        <p>{{ a.contenu }}</p>
-                        <a href="{% url 'info_detail' a.pk %}" class="info-card__cta" onclick="event.stopPropagation()">
-                          Lire l'article →
-                        </a>
-                        <div class="info-card__source">{% if a.auteur %}{{ a.auteur.nom|default:a.auteur.email }}{% else %}TBG{% endif %}</div>
-                      </div>
-                      <div class="info-card__hint">Cliquer pour lire →</div>
+        <div class="cat-section-row">
+          <a href="{% url 'rubriques_index' %}#info" class="cat-label-card">
+            <div class="cat-label-card__img-wrap" style="background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-size:2.5rem">📰</div>
+            <div class="cat-label-card__title">Actualités locales</div>
+          </a>
+          <div class="cat-carousel-wrapper cat-section-row__carousel">
+            <div class="cat-carousel">
+              <div class="cat-carousel__track">
+                {% for a in infos_home %}
+                <div class="cat-carousel__item">
+                  <div class="info-card" data-href="{% url 'info_detail' a.pk %}" onclick="handleCardClick(this,event)">
+                    {% if a.photo %}<img src="{{ a.photo }}" alt="" class="info-card__photo" loading="lazy" onerror="this.style.display='none'">{% endif %}
+                    <span class="info-card__badge">📰 Info</span>
+                    <div class="info-card__title">{{ a.titre }}</div>
+                    <div class="info-card__preview">{{ a.contenu }}</div>
+                    <div class="info-card__expand">
+                      <p>{{ a.contenu }}</p>
+                      <a href="{% url 'info_detail' a.pk %}" class="info-card__cta" onclick="event.stopPropagation()">
+                        Lire l'article →
+                      </a>
+                      <div class="info-card__source">{% if a.auteur %}{{ a.auteur.nom|default:a.auteur.email }}{% else %}TBG{% endif %}</div>
                     </div>
-                  </div>
-                  {% endfor %}
-                  <div class="cat-carousel__item">
-                    <a href="{% url 'rubriques_index' %}#info" class="cat-voir-tout">
-                      <div class="cat-voir-tout__inner">
-                        <span class="cat-voir-tout__arrow">→</span>
-                        <span class="cat-voir-tout__label">Voir tout</span>
-                      </div>
-                    </a>
+                    <div class="info-card__hint">Cliquer pour lire →</div>
                   </div>
                 </div>
-              </div>
-              <button class="cat-carousel__btn cat-carousel__btn--prev" aria-label="Précédent">‹</button>
-              <button class="cat-carousel__btn cat-carousel__btn--next" aria-label="Suivant">›</button>
-            </div>
-          </div>
-        </div>
-        {% endif %}
-
-        {% if nouveautes_home %}
-        <div class="mb-2">
-          <div class="over-img flex items-center justify-between mb-4">
-            <h2 class="text-xl font-bold text-gray-900">🚀 Nouveautés Business</h2>
-            <a href="{% url 'rubriques_index' %}#nouveautes" class="text-sm text-emerald-600 hover:text-emerald-800 font-medium transition">Voir tout →</a>
-          </div>
-          <div class="cat-section-row">
-            <a href="{% url 'rubriques_index' %}#nouveautes" class="cat-label-card">
-              <div class="cat-label-card__img-wrap" style="background:#dcfce7;display:flex;align-items:center;justify-content:center;font-size:2.5rem">🚀</div>
-              <div class="cat-label-card__title">Nouveaux business</div>
-            </a>
-            <div class="cat-carousel-wrapper cat-section-row__carousel">
-              <div class="cat-carousel">
-                <div class="cat-carousel__track">
-                  {% for n in nouveautes_home %}
-                  <div class="cat-carousel__item">
-                    <div class="nouv-card" data-href="{% url 'nouveaute_detail' n.pk %}" onclick="handleCardClick(this,event)">
-                      {% if n.photo %}<img src="{{ n.photo }}" alt="" class="info-card__photo" loading="lazy" onerror="this.style.display='none'">{% endif %}
-                      <span class="nouv-card__badge">🚀 Nouveauté</span>
-                      <div class="nouv-card__title">{{ n.titre }}</div>
-                      <div class="nouv-card__preview">{{ n.contenu }}</div>
-                      <div class="nouv-card__expand">
-                        <p>{{ n.contenu }}</p>
-                        <a href="{% url 'nouveaute_detail' n.pk %}" class="nouv-card__cta" onclick="event.stopPropagation()">
-                          Lire l'article →
-                        </a>
-                        <div class="nouv-card__source">{{ n.pro_user.nom|default:n.pro_user.email }}</div>
-                      </div>
-                      <div class="nouv-card__hint">Cliquer pour lire →</div>
+                {% endfor %}
+                <div class="cat-carousel__item">
+                  <a href="{% url 'rubriques_index' %}#info" class="cat-voir-tout">
+                    <div class="cat-voir-tout__inner">
+                      <span class="cat-voir-tout__arrow">→</span>
+                      <span class="cat-voir-tout__label">Voir tout</span>
                     </div>
-                  </div>
-                  {% endfor %}
-                  <div class="cat-carousel__item">
-                    <a href="{% url 'rubriques_index' %}#nouveautes" class="cat-voir-tout">
-                      <div class="cat-voir-tout__inner">
-                        <span class="cat-voir-tout__arrow">→</span>
-                        <span class="cat-voir-tout__label">Voir tout</span>
-                      </div>
-                    </a>
-                  </div>
+                  </a>
                 </div>
               </div>
-              <button class="cat-carousel__btn cat-carousel__btn--prev" aria-label="Précédent">‹</button>
-              <button class="cat-carousel__btn cat-carousel__btn--next" aria-label="Suivant">›</button>
             </div>
+            <button class="cat-carousel__btn cat-carousel__btn--prev" aria-label="Précédent">‹</button>
+            <button class="cat-carousel__btn cat-carousel__btn--next" aria-label="Suivant">›</button>
           </div>
         </div>
-        {% endif %}
-
       </div>
       {% endif %}
-      <!-- ── /RUBRIQUES ── -->
 
-      <!-- ── CAROUSEL PROMOS ── -->
+      <!-- ── NOUVEAUTÉS BUSINESS ── -->
+      {% if nouveautes_home %}
+      <div class="mb-10">
+        <div class="over-img flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-gray-900">🚀 Nouveautés Business</h2>
+          <a href="{% url 'rubriques_index' %}#nouveautes" class="text-sm text-emerald-600 hover:text-emerald-800 font-medium transition">Voir tout →</a>
+        </div>
+        <div class="cat-section-row">
+          <a href="{% url 'rubriques_index' %}#nouveautes" class="cat-label-card">
+            <div class="cat-label-card__img-wrap" style="background:#dcfce7;display:flex;align-items:center;justify-content:center;font-size:2.5rem">🚀</div>
+            <div class="cat-label-card__title">Nouveaux business</div>
+          </a>
+          <div class="cat-carousel-wrapper cat-section-row__carousel">
+            <div class="cat-carousel">
+              <div class="cat-carousel__track">
+                {% for n in nouveautes_home %}
+                <div class="cat-carousel__item">
+                  <div class="nouv-card" data-href="{% url 'nouveaute_detail' n.pk %}" onclick="handleCardClick(this,event)">
+                    {% if n.photo %}<img src="{{ n.photo }}" alt="" class="info-card__photo" loading="lazy" onerror="this.style.display='none'">{% endif %}
+                    <span class="nouv-card__badge">🚀 Nouveauté</span>
+                    <div class="nouv-card__title">{{ n.titre }}</div>
+                    <div class="nouv-card__preview">{{ n.contenu }}</div>
+                    <div class="nouv-card__expand">
+                      <p>{{ n.contenu }}</p>
+                      <a href="{% url 'nouveaute_detail' n.pk %}" class="nouv-card__cta" onclick="event.stopPropagation()">
+                        Lire l'article →
+                      </a>
+                      <div class="nouv-card__source">{{ n.pro_user.nom|default:n.pro_user.email }}</div>
+                    </div>
+                    <div class="nouv-card__hint">Cliquer pour lire →</div>
+                  </div>
+                </div>
+                {% endfor %}
+                <div class="cat-carousel__item">
+                  <a href="{% url 'rubriques_index' %}#nouveautes" class="cat-voir-tout">
+                    <div class="cat-voir-tout__inner">
+                      <span class="cat-voir-tout__arrow">→</span>
+                      <span class="cat-voir-tout__label">Voir tout</span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <button class="cat-carousel__btn cat-carousel__btn--prev" aria-label="Précédent">‹</button>
+            <button class="cat-carousel__btn cat-carousel__btn--next" aria-label="Suivant">›</button>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- ── PROMOS & BONS PLANS ── -->
       {% if promos_home %}
       <div class="promo-carousel mb-10">
         <div class="over-img flex items-center justify-between mb-4">
@@ -339,7 +331,13 @@
         </div>
       </div>
       {% endif %}
-      <!-- ── /CAROUSEL PROMOS ── -->
+
+      {% endif %}
+      {% if forloop.counter == 4 %}
+      {% with current_strip=pub_strip_3 %}{% include 'partials/_pub_strip.html' %}{% endwith %}
+      {% endif %}
+
+      {% endfor %}
 
     </div>
 

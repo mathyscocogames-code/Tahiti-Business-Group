@@ -2438,6 +2438,9 @@ img.loaded     { opacity: 1; }
     margin-top: 3px;
   }
 
+  /* Masquer le bouton Contacter sur mobile pour réduire la taille des fiches */
+  .btn-contact-card { display: none !important; }
+
   /* Boutons flèches carousel : visibles et dans l'espace */
   .cat-carousel__btn {
     width: 26px;

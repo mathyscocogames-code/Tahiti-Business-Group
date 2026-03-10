@@ -25,6 +25,8 @@ function initLazyImages() {
   const imgs = document.querySelectorAll('img[data-src]');
   if (!imgs.length) return;
 
+  const scrollRoot = document.getElementById('main-frame') || null;
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -35,7 +37,7 @@ function initLazyImages() {
         observer.unobserve(img);
       }
     });
-  }, { rootMargin: '200px 0px' });
+  }, { root: scrollRoot, rootMargin: '200px 0px' });
 
   imgs.forEach(img => observer.observe(img));
 }
@@ -56,6 +58,10 @@ function initCardAnimations() {
   const cards = document.querySelectorAll('.ad-card');
   if (!cards.length) return;
 
+  // Sur desktop, les cards sont dans #main-frame (conteneur scrollable).
+  // Il faut utiliser ce conteneur comme root pour que l'observer détecte les cards.
+  const scrollRoot = document.getElementById('main-frame') || null;
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
       if (entry.isIntersecting) {
@@ -66,7 +72,7 @@ function initCardAnimations() {
         observer.unobserve(entry.target);
       }
     });
-  }, { rootMargin: '0px 0px -40px 0px' });
+  }, { root: scrollRoot, rootMargin: '50px 0px -40px 0px' });
 
   cards.forEach(card => {
     card.style.opacity = '0';
