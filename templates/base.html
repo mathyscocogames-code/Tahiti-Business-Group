@@ -668,6 +668,19 @@
 </div>
 
 <script>
+// ── Positionner les dropdowns nav en fixed sur desktop ────────────────
+(function() {
+  if (!window.matchMedia('(min-width:1025px)').matches) return;
+  document.querySelectorAll('.cat-nav-item').forEach(function(item) {
+    item.addEventListener('mouseenter', function() {
+      var dd = item.querySelector('.cat-dropdown');
+      if (!dd) return;
+      var rect = item.getBoundingClientRect();
+      dd.style.left = rect.left + 'px';
+      dd.style.top = rect.bottom + 'px';
+    });
+  });
+})();
 // ── Cible de scroll : cadre central (desktop) ou body (mobile) ────────
 function _frameScrollTarget() {
   const f = document.getElementById('main-frame');

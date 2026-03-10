@@ -2094,8 +2094,18 @@ img.loaded     { opacity: 1; }
   }
   #main-frame::-webkit-scrollbar       { width: 5px; }
   #main-frame::-webkit-scrollbar-track { background: transparent; }
-  /* Nav catégories : réduire le padding pour que tous les items tiennent */
-  #main-frame .cat-nav-link { padding: 0 5px; font-size: 0.82rem; }
+  /* Nav catégories : scroll horizontal, dropdowns en position:fixed */
+  #main-frame .cat-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  #main-frame .cat-nav::-webkit-scrollbar { display: none; }
+  #main-frame .cat-nav-link { padding: 0 8px; font-size: 0.82rem; }
+  #main-frame .cat-dropdown {
+    position: fixed;
+    top: auto;
+    left: auto;
+  }
   #main-frame::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
 
   /* ── Sidebar droite ─────────────────────────────────────────── */
