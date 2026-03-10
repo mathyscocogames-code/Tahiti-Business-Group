@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tahiti_business.middleware.NoCacheHTMLMiddleware',
 ]
 
 ROOT_URLCONF = 'tahiti_business.urls'
