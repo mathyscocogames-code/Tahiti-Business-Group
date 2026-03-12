@@ -57,6 +57,9 @@ MIDDLEWARE = [
     'tahiti_business.middleware.NoCacheHTMLMiddleware',
 ]
 
+# Autoriser l'affichage en iframe depuis n'importe quel site
+X_FRAME_OPTIONS = 'ALLOWALL'
+
 ROOT_URLCONF = 'tahiti_business.urls'
 
 TEMPLATES = [
