@@ -40,48 +40,6 @@
         {% endif %}
       </div>
 
-      <!-- Lightbox popup -->
-      <div id="lightbox" class="lightbox-overlay" onclick="if(event.target===this)closeLightbox()">
-        <button class="lightbox-close" onclick="closeLightbox()" aria-label="Fermer">&times;</button>
-        <div class="lightbox-content">
-          <div class="lightbox-left">
-            <div class="lightbox-img-wrap">
-              <button class="lightbox-arrow lightbox-arrow--prev" onclick="lightboxNav(-1)" aria-label="Précédent">&#8249;</button>
-              <img id="lightboxImg" src="" alt="" class="lightbox-img">
-              <button class="lightbox-arrow lightbox-arrow--next" onclick="lightboxNav(1)" aria-label="Suivant">&#8250;</button>
-            </div>
-            {% if annonce.photos|length > 1 %}
-            <div class="lightbox-thumbs">
-              {% for photo in annonce.photos %}
-              <img src="{{ photo }}" alt="Photo {{ forloop.counter }}" class="lightbox-thumb {% if forloop.first %}active{% endif %}" onclick="lightboxGoTo({{ forloop.counter0 }})">
-              {% endfor %}
-            </div>
-            {% endif %}
-          </div>
-          <div class="lightbox-right">
-            <h2 class="text-xl font-black text-gray-900 mb-2">{{ annonce.titre }}</h2>
-            <div class="text-2xl font-black text-blue-600 mb-4">{{ annonce.get_prix_display_label }}</div>
-            <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-500 mb-4">
-              <span>📍 {{ annonce.localisation }}</span>
-              <span>📅 {{ annonce.created_at|date:"d/m/Y" }}</span>
-            </div>
-            {% if annonce.specs %}
-            <div class="mb-4">
-              <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Caractéristiques</p>
-              <div class="grid grid-cols-2 gap-2">
-                {% for key, val in annonce.specs.items %}
-                <div class="bg-gray-50 rounded-lg px-2 py-1.5">
-                  <div class="text-xs text-gray-400">{{ key|spec_label }}</div>
-                  <div class="font-semibold text-gray-900 text-sm">{{ val }}</div>
-                </div>
-                {% endfor %}
-              </div>
-            </div>
-            {% endif %}
-            <div class="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap lightbox-desc">{{ annonce.description }}</div>
-          </div>
-        </div>
-      </div>
       {% else %}
       <div class="bg-white border border-gray-200 rounded-2xl h-64 flex items-center justify-center text-7xl shadow-sm">
         {% if annonce.categorie == 'vehicules' %}🚗{% elif annonce.categorie == 'immobilier' %}🏠{% elif annonce.categorie == 'occasion' %}📦{% elif annonce.categorie == 'emploi' %}💼{% elif annonce.categorie == 'services' %}🔧{% else %}📦{% endif %}
@@ -212,6 +170,51 @@
 
   </div>
 </div>
+
+{% if annonce.photos %}
+<!-- Lightbox popup — hors de tout conteneur pour être au-dessus du header -->
+<div id="lightbox" class="lightbox-overlay" onclick="if(event.target===this)closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Fermer">&times;</button>
+  <div class="lightbox-content">
+    <div class="lightbox-left">
+      <div class="lightbox-img-wrap">
+        <button class="lightbox-arrow lightbox-arrow--prev" onclick="lightboxNav(-1)" aria-label="Précédent">&#8249;</button>
+        <img id="lightboxImg" src="" alt="" class="lightbox-img">
+        <button class="lightbox-arrow lightbox-arrow--next" onclick="lightboxNav(1)" aria-label="Suivant">&#8250;</button>
+      </div>
+      {% if annonce.photos|length > 1 %}
+      <div class="lightbox-thumbs">
+        {% for photo in annonce.photos %}
+        <img src="{{ photo }}" alt="Photo {{ forloop.counter }}" class="lightbox-thumb {% if forloop.first %}active{% endif %}" onclick="lightboxGoTo({{ forloop.counter0 }})">
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    <div class="lightbox-right">
+      <h2 class="text-xl font-black text-gray-900 mb-2">{{ annonce.titre }}</h2>
+      <div class="text-2xl font-black text-blue-600 mb-4">{{ annonce.get_prix_display_label }}</div>
+      <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-500 mb-4">
+        <span>📍 {{ annonce.localisation }}</span>
+        <span>📅 {{ annonce.created_at|date:"d/m/Y" }}</span>
+      </div>
+      {% if annonce.specs %}
+      <div class="mb-4">
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Caractéristiques</p>
+        <div class="grid grid-cols-2 gap-2">
+          {% for key, val in annonce.specs.items %}
+          <div class="bg-gray-50 rounded-lg px-2 py-1.5">
+            <div class="text-xs text-gray-400">{{ key|spec_label }}</div>
+            <div class="font-semibold text-gray-900 text-sm">{{ val }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      <div class="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap lightbox-desc">{{ annonce.description }}</div>
+    </div>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
@@ -222,7 +225,10 @@ function switchPhoto(el, src) {
   el.classList.add('active');
 }
 
-// Lightbox
+// Lightbox — déplacer au body pour être au-dessus du header sticky
+const lbEl = document.getElementById('lightbox');
+if (lbEl) document.body.appendChild(lbEl);
+
 const lbPhotos = [{% for photo in annonce.photos %}'{{ photo }}'{% if not forloop.last %},{% endif %}{% endfor %}];
 let lbIndex = 0;
 
