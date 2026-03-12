@@ -803,6 +803,20 @@ function boostUpdate(pos) {
 // Init au chargement
 document.addEventListener('DOMContentLoaded', function() { boostUpdate(0); });
 
+// Auto-remplir "Affichage prix" quand l'utilisateur tape un prix
+(function() {
+  const prixInput = document.getElementById('id_prix');
+  const labelInput = document.getElementById('id_prix_label');
+  if (!prixInput || !labelInput) return;
+  let userEditedLabel = false;
+  labelInput.addEventListener('input', () => { userEditedLabel = labelInput.value.trim() !== ''; });
+  prixInput.addEventListener('input', () => {
+    if (userEditedLabel) return;
+    const v = parseInt(prixInput.value) || 0;
+    labelInput.value = v > 0 ? v.toLocaleString('fr-FR').replace(/\u202F/g, ' ') + ' XPF' : '';
+  });
+})();
+
 // Drag & drop
 const dz = document.getElementById('dropzone');
 if (dz) {

@@ -373,7 +373,7 @@ def edit_annonce(request, pk):
         annonce.photos = current
         annonce.save()
         messages.success(request, "Annonce modifiée avec succès.")
-        return redirect('mes_annonces')
+        return redirect('annonce_detail', pk=annonce.pk)
 
     return render(request, 'ads/edit_annonce.html', {
         'annonce':              annonce,
