@@ -327,7 +327,7 @@ textarea.form-input       { resize: vertical; min-height: 100px; }
   top: 108px;   /* juste sous le header sticky (zone1 64px + zone2 44px) */
   left: 0;
   width: 100vw;
-  height: 280px; /* hauteur rectangle billboard desktop */
+  height: 180px; /* hauteur rectangle billboard desktop */
   z-index: 1;
   overflow: hidden;
   pointer-events: none;
@@ -363,7 +363,7 @@ textarea.form-input       { resize: vertical; min-height: 100px; }
 
 /* Espaceur = hauteur du rectangle pub (contenu démarre juste en dessous) */
 .pub-spacer {
-  height: 280px;
+  height: 180px;
   position: relative;
   z-index: 2;
   pointer-events: none;
