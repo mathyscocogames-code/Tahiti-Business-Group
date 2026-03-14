@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block title %}Déposer une publicité{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-10">
+
+  <div class="text-center mb-8">
+    <div class="inline-flex items-center gap-2 bg-accent/10 text-accent border border-accent/20 px-3 py-1.5 rounded-full text-xs font-medium mb-4">
+      📢 Publicité self-service
+    </div>
+    <h1 class="text-2xl font-bold mb-2">Déposer votre publicité</h1>
+    <p class="text-gray-500 text-sm">Choisissez votre emplacement, uploadez votre image et payez en ligne. Votre pub sera active immédiatement.</p>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-5 text-white">
+      <h2 class="text-lg font-black">Formulaire de publicité</h2>
+      <p class="text-blue-200 text-sm mt-1">Remplissez les informations ci-dessous puis procédez au paiement sécurisé</p>
+    </div>
+
+    <div class="p-6 md:p-8">
+      <form method="post" enctype="multipart/form-data" class="space-y-6" id="depositForm">
+        {% csrf_token %}
+
+        <!-- Image -->
+        <div>
+          <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Image publicitaire *</label>
+          <div id="pubDropzone"
+            class="border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-xl p-6 text-center transition cursor-pointer bg-gray-50 hover:bg-blue-50"
+            onclick="document.getElementById('id_image').click()">
+            <div class="text-3xl mb-1">🖼️</div>
+            <div class="text-sm font-semibold text-gray-600">Cliquez ou glissez votre image ici</div>
+            <div class="text-xs text-gray-400 mt-1">JPG, PNG, WebP — sera redimensionnée automatiquement</div>
+            <input type="file" id="id_image" name="image" accept="image/*" class="hidden" onchange="previewPubImage(this)">
+          </div>
+          <div id="pubImagePreview" class="mt-3 hidden">
+            <img id="pubPreviewImg" class="max-h-32 rounded-xl border border-gray-200 shadow-sm" alt="Aperçu">
+          </div>
+          {% if form.image.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ form.image.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Titre + Lien -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Titre de la pub *</label>
+            {{ form.titre }}
+            {% if form.titre.errors %}<p class="text-red-500 text-xs mt-1">{{ form.titre.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Lien de destination *</label>
+            {{ form.lien }}
+            {% if form.lien.errors %}<p class="text-red-500 text-xs mt-1">{{ form.lien.errors.0 }}</p>{% endif %}
+          </div>
+        </div>
+
+        <!-- Emplacement + Durée -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Emplacement *</label>
+            {{ form.emplacement }}
+            <p class="text-xs text-gray-400 mt-1" id="emplacementDesc"></p>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Durée *</label>
+            {{ form.duree }}
+          </div>
+        </div>
+
+        <!-- Aperçu des emplacements -->
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+          <div class="text-xs font-bold text-gray-500 uppercase mb-3">Emplacements disponibles</div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="emplacementCards">
+            <button type="button" data-emp="haut" class="emp-card border-2 rounded-xl p-3 text-center transition hover:border-blue-400 bg-white">
+              <div class="text-lg mb-1">🔴</div>
+              <div class="text-xs font-bold">Sidebar Haut</div>
+              <div class="text-xs text-emerald-600 font-bold mt-1">60 000 XPF/mois</div>
+            </button>
+            <button type="button" data-emp="milieu" class="emp-card border-2 rounded-xl p-3 text-center transition hover:border-blue-400 bg-white">
+              <div class="text-lg mb-1">🟡</div>
+              <div class="text-xs font-bold">Sidebar Milieu</div>
+              <div class="text-xs text-emerald-600 font-bold mt-1">40 000 XPF/mois</div>
+            </button>
+            <button type="button" data-emp="bas" class="emp-card border-2 rounded-xl p-3 text-center transition hover:border-blue-400 bg-white">
+              <div class="text-lg mb-1">🟢</div>
+              <div class="text-xs font-bold">Sidebar Bas</div>
+              <div class="text-xs text-emerald-600 font-bold mt-1">20 000 XPF/mois</div>
+            </button>
+            <button type="button" data-emp="billboard" class="emp-card border-2 rounded-xl p-3 text-center transition hover:border-blue-400 bg-white">
+              <div class="text-lg mb-1">📺</div>
+              <div class="text-xs font-bold">Billboard</div>
+              <div class="text-xs text-emerald-600 font-bold mt-1">100 000 XPF/mois</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Infos client -->
+        <div class="border-t border-gray-200 pt-5">
+          <div class="text-xs font-bold text-gray-500 uppercase mb-3">Vos coordonnées</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Nom / Entreprise *</label>
+              {{ form.client_nom }}
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">E-mail *</label>
+              {{ form.client_email }}
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5">Téléphone</label>
+              {{ form.client_tel }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Récap prix -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm font-bold text-blue-900">Total à payer</div>
+              <div class="text-xs text-blue-600 mt-0.5" id="prixDetail">Sélectionnez un emplacement et une durée</div>
+            </div>
+            <div class="text-3xl font-extrabold text-blue-700" id="prixTotal">— XPF</div>
+          </div>
+        </div>
+
+        <!-- Bouton submit -->
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-xl transition text-base flex items-center justify-center gap-2">
+          🔒 Procéder au paiement sécurisé
+        </button>
+
+        <p class="text-xs text-gray-400 text-center">
+          Paiement sécurisé par <strong>PayZen by OSB</strong>. Votre publicité sera activée dès confirmation du paiement.
+        </p>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Lien alternatif -->
+  <div class="text-center mt-6 text-sm text-gray-500">
+    Vous préférez être accompagné ?
+    <a href="{% url 'demande_pub' %}" class="text-blue-600 hover:underline font-medium">Faites une demande manuelle</a>
+    ou appelez le <a href="tel:0689610613" class="text-emerald-600 font-bold">89 61 06 13</a>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Données de prix ──
+var PRIX = {{ prix_json|safe }};
+var DISCOUNTS = {{ discount_json|safe }};
+
+function updatePrix() {
+  var emp = document.getElementById('id_emplacement').value;
+  var duree = parseInt(document.getElementById('id_duree').value);
+  var prixMensuel = PRIX[emp] || 0;
+  var total = 0;
+  var detail = '';
+
+  if (duree === 1) {
+    total = Math.floor(prixMensuel / 4);
+    detail = prixMensuel.toLocaleString('fr') + ' XPF/mois ÷ 4 = 1 semaine';
+  } else {
+    var nbMois = duree / 4;
+    total = prixMensuel * nbMois;
+    var discount = DISCOUNTS[duree] || 0;
+    if (discount > 0) {
+      detail = prixMensuel.toLocaleString('fr') + ' × ' + nbMois + ' mois - ' + (discount*100) + '% = ';
+      total = Math.floor(total * (1 - discount));
+    } else {
+      detail = prixMensuel.toLocaleString('fr') + ' × ' + nbMois + ' mois = ';
+    }
+  }
+
+  document.getElementById('prixTotal').textContent = total.toLocaleString('fr') + ' XPF';
+  document.getElementById('prixDetail').textContent = detail;
+
+  // Highlight emplacement card
+  document.querySelectorAll('.emp-card').forEach(function(card) {
+    if (card.dataset.emp === emp) {
+      card.classList.add('border-blue-500', 'bg-blue-50');
+      card.classList.remove('border-gray-200');
+    } else {
+      card.classList.remove('border-blue-500', 'bg-blue-50');
+      card.classList.add('border-gray-200');
+    }
+  });
+}
+
+document.getElementById('id_emplacement').addEventListener('change', updatePrix);
+document.getElementById('id_duree').addEventListener('change', updatePrix);
+
+// Clic sur les cartes d'emplacement
+document.querySelectorAll('.emp-card').forEach(function(card) {
+  card.addEventListener('click', function() {
+    document.getElementById('id_emplacement').value = card.dataset.emp;
+    updatePrix();
+  });
+});
+
+// Init
+updatePrix();
+
+// ── Preview image ──
+function previewPubImage(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('pubPreviewImg').src = e.target.result;
+      document.getElementById('pubImagePreview').classList.remove('hidden');
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// Drag & drop
+var dz = document.getElementById('pubDropzone');
+['dragover','dragenter'].forEach(function(ev) {
+  dz.addEventListener(ev, function(e) { e.preventDefault(); e.stopPropagation(); dz.classList.add('border-blue-500', 'bg-blue-50'); });
+});
+['dragleave','drop'].forEach(function(ev) {
+  dz.addEventListener(ev, function(e) { e.preventDefault(); e.stopPropagation(); dz.classList.remove('border-blue-500', 'bg-blue-50'); });
+});
+dz.addEventListener('drop', function(e) {
+  var dt = new DataTransfer();
+  if (e.dataTransfer.files[0]) dt.items.add(e.dataTransfer.files[0]);
+  document.getElementById('id_image').files = dt.files;
+  previewPubImage(document.getElementById('id_image'));
+});
+</script>
+{% endblock %}

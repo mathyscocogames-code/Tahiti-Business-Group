@@ -1,5 +1,5 @@
 from django import forms
-from .models import Publicite, DemandePublicite
+from .models import Publicite, DemandePublicite, EMPLACEMENTS, DUREE_CHOICES
 
 
 class PubliciteForm(forms.ModelForm):
@@ -40,3 +40,39 @@ class DemandePubliciteForm(forms.ModelForm):
                 'placeholder': 'Décrivez votre besoin...'
             }),
         }
+
+
+class DepotPubliciteForm(forms.Form):
+    """Formulaire self-service pour déposer et payer une publicité."""
+    titre = forms.CharField(
+        max_length=200, label='Titre de votre pub',
+        widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ex: Promo -30% chez MonShop'}),
+    )
+    image = forms.ImageField(
+        label='Image publicitaire',
+        help_text='JPG, PNG ou WebP. Sera redimensionnée automatiquement.',
+    )
+    lien = forms.URLField(
+        label='Lien de destination',
+        widget=forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://votre-site.com'}),
+    )
+    emplacement = forms.ChoiceField(
+        choices=EMPLACEMENTS, label='Emplacement',
+        widget=forms.Select(attrs={'class': 'form-input', 'id': 'id_emplacement'}),
+    )
+    duree = forms.ChoiceField(
+        choices=DUREE_CHOICES, label='Durée',
+        widget=forms.Select(attrs={'class': 'form-input', 'id': 'id_duree'}),
+    )
+    client_nom = forms.CharField(
+        max_length=150, label='Votre nom / entreprise',
+        widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Nom ou raison sociale'}),
+    )
+    client_email = forms.EmailField(
+        label='E-mail',
+        widget=forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'contact@entreprise.pf'}),
+    )
+    client_tel = forms.CharField(
+        max_length=20, label='Téléphone', required=False,
+        widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': '89 XX XX XX'}),
+    )

@@ -5,31 +5,42 @@ from .models import Publicite, DemandePublicite
 
 @admin.register(Publicite)
 class PubliciteAdmin(admin.ModelAdmin):
-    list_display = ['titre', 'emplacement_badge', 'client_nom', 'prix_display', 'actif', 'apercu', 'created_at']
-    list_filter = ['emplacement', 'actif']
+    list_display = ['titre', 'emplacement_badge', 'client_nom', 'prix_display', 'payment_badge', 'actif', 'apercu', 'created_at']
+    list_filter = ['emplacement', 'actif', 'payment_status']
     list_editable = ['actif']
-    search_fields = ['titre', 'client_nom', 'client_email']
-    readonly_fields = ['created_at', 'apercu']
+    search_fields = ['titre', 'client_nom', 'client_email', 'payment_ref']
+    readonly_fields = ['created_at', 'apercu', 'payment_ref', 'payment_trans_id']
     fieldsets = (
         ('Publicité', {'fields': ('titre', 'description', 'image', 'image_url', 'lien', 'emplacement', 'actif')}),
         ('Client', {'fields': ('client_nom', 'client_email', 'client_tel')}),
-        ('Facturation', {'fields': ('prix', 'date_debut', 'date_fin')}),
+        ('Facturation', {'fields': ('prix', 'duree_semaines', 'date_debut', 'date_fin')}),
+        ('Paiement PayZen', {'fields': ('payment_status', 'payment_ref', 'payment_trans_id'), 'classes': ('collapse',)}),
         ('Aperçu', {'fields': ('apercu', 'created_at')}),
     )
 
     def emplacement_badge(self, obj):
-        colors = {'haut': '#ef4444', 'milieu': '#f59e0b', 'bas': '#10b981'}
-        labels = {'haut': '🔴 HAUT', 'milieu': '🟡 MILIEU', 'bas': '🟢 BAS'}
+        colors = {'haut': '#ef4444', 'milieu': '#f59e0b', 'bas': '#10b981', 'billboard': '#3b82f6'}
+        labels = {'haut': '🔴 HAUT', 'milieu': '🟡 MILIEU', 'bas': '🟢 BAS', 'billboard': '📺 BILLBOARD'}
         return format_html(
             '<span style="color:{};font-weight:bold">{}</span>',
-            colors.get(obj.emplacement, '#fff'),
-            labels.get(obj.emplacement, obj.emplacement)
+            colors.get(obj.emplacement, '#6b7280'),
+            labels.get(obj.emplacement, obj.emplacement.upper())
         )
     emplacement_badge.short_description = 'Emplacement'
 
     def prix_display(self, obj):
-        return f"{obj.prix:,} XPF/mois".replace(',', ' ')
+        return f"{obj.prix:,} XPF".replace(',', ' ')
     prix_display.short_description = 'Prix'
+
+    def payment_badge(self, obj):
+        colors = {'paid': '#10b981', 'pending': '#f59e0b', 'failed': '#ef4444', 'expired': '#6b7280', 'none': '#d1d5db'}
+        labels = {'paid': '✅ Payé', 'pending': '⏳ Attente', 'failed': '❌ Échoué', 'expired': '⏰ Expiré', 'none': '—'}
+        return format_html(
+            '<span style="color:{};font-weight:bold">{}</span>',
+            colors.get(obj.payment_status, '#6b7280'),
+            labels.get(obj.payment_status, obj.payment_status)
+        )
+    payment_badge.short_description = 'Paiement'
 
     def apercu(self, obj):
         img = obj.get_image()

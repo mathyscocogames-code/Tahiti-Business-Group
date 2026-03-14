@@ -19,14 +19,49 @@ EMPLACEMENTS = [
 ]
 
 PRIX_PAR_EMPLACEMENT = {
-    "billboard": 25000,
-    "strip_1":    8000,
-    "strip_2":    8000,
-    "strip_3":    8000,
+    "billboard": 100000,
+    "strip_1":    52000,
+    "strip_2":    52000,
+    "strip_3":    52000,
     "haut":      60000,
     "milieu":    40000,
     "bas":       20000,
 }
+
+DUREE_CHOICES = [
+    (1,  '1 semaine'),
+    (4,  '1 mois'),
+    (12, '3 mois (-10%)'),
+    (24, '6 mois (-20%)'),
+]
+
+DISCOUNT_PAR_DUREE = {
+    1:  0,       # 1 semaine = prix mensuel / 4
+    4:  0,       # 1 mois = prix mensuel
+    12: 0.10,    # 3 mois = -10%
+    24: 0.20,    # 6 mois = -20%
+}
+
+PAYMENT_STATUS = [
+    ('none',    '—'),
+    ('pending', 'En attente'),
+    ('paid',    'Payé'),
+    ('failed',  'Échoué'),
+    ('expired', 'Expiré'),
+]
+
+
+def calculer_prix(emplacement, duree_semaines):
+    """Calcule le prix total en XPF pour un emplacement et une durée en semaines."""
+    prix_mensuel = PRIX_PAR_EMPLACEMENT.get(emplacement, 0)
+    if duree_semaines == 1:
+        total = prix_mensuel // 4
+    else:
+        nb_mois = duree_semaines // 4
+        total = prix_mensuel * nb_mois
+    discount = DISCOUNT_PAR_DUREE.get(duree_semaines, 0)
+    total = int(total * (1 - discount))
+    return total
 
 # Dimensions cibles (w × h) par emplacement — crop centré via ImageOps.fit
 DIMS_PAR_EMPLACEMENT = {
@@ -60,6 +95,14 @@ class Publicite(models.Model):
     date_debut   = models.DateField(null=True, blank=True)
     date_fin     = models.DateField(null=True, blank=True)
     created_at   = models.DateTimeField(auto_now_add=True)
+
+    # ── Paiement PayZen ──
+    payment_status   = models.CharField(max_length=10, choices=PAYMENT_STATUS, default='none', db_index=True)
+    payment_ref      = models.CharField(max_length=64, unique=True, blank=True, null=True,
+                                        help_text="Référence unique PayZen (vads_order_id)")
+    payment_trans_id = models.CharField(max_length=64, blank=True,
+                                        help_text="ID transaction retourné par PayZen")
+    duree_semaines   = models.IntegerField(default=4, help_text="Durée achetée en semaines")
 
     class Meta:
         verbose_name = 'Publicité'

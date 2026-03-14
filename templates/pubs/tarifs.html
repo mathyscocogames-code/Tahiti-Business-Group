@@ -35,8 +35,11 @@
       </div>
       <div class="text-xs text-muted mb-4">par mois</div>
       <p class="text-sm text-muted mb-6">{{ tarif.desc }}</p>
-      <a href="{% url 'demande_pub' %}" class="block w-full text-center bg-primary hover:bg-blue-600 text-white font-semibold py-2.5 rounded-xl transition text-sm">
-        Réserver cet emplacement
+      <a href="{% url 'deposer_pub' %}?emplacement={{ tarif.slug }}" class="block w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl transition text-sm mb-2">
+        🔒 Déposer & payer en ligne
+      </a>
+      <a href="{% url 'demande_pub' %}" class="block w-full text-center text-gray-500 hover:text-blue-600 text-xs transition">
+        ou demande manuelle
       </a>
     </div>
     {% endfor %}
