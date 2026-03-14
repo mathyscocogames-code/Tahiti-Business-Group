@@ -271,7 +271,7 @@ def deposer_annonce(request):
     from .forms import AnnonceForm
 
     if request.method == 'POST':
-        if _rate_limited(request, 'deposer', max_count=5, period_minutes=60):
+        if not request.user.is_staff and _rate_limited(request, 'deposer', max_count=5, period_minutes=60):
             messages.error(request, "Limite atteinte : 5 annonces par heure maximum. Réessayez plus tard.")
             return redirect('deposer_annonce')
         form = AnnonceForm(request.POST, request.FILES)
