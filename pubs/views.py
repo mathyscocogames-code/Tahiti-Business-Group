@@ -104,8 +104,8 @@ def tarifs_pubs(request):
         'pubs_milieu': pubs_milieu,
         'pubs_bas':    pubs_bas,
         'tarifs': [
-            {'emplacement': 'Haut de sidebar', 'prix': 60000, 'desc': 'Meilleure visibilité, premier regard', 'slug': 'haut'},
-            {'emplacement': 'Milieu de sidebar', 'prix': 40000, 'desc': 'Position centrale, très efficace', 'slug': 'milieu'},
+            {'emplacement': 'Haut de sidebar', 'prix': 40000, 'desc': 'Meilleure visibilité, premier regard', 'slug': 'haut'},
+            {'emplacement': 'Milieu de sidebar', 'prix': 28000, 'desc': 'Position centrale, très efficace', 'slug': 'milieu'},
             {'emplacement': 'Bas de sidebar', 'prix': 20000, 'desc': 'Présence permanente, tarif abordable', 'slug': 'bas'},
         ],
     })

@@ -9,22 +9,22 @@ from django.db import models
 from PIL import Image as PILImage, ImageOps as PILImageOps
 
 EMPLACEMENTS = [
-    ("billboard", "Billboard plein ecran (25 000 XPF/mois)"),
-    ("strip_1",   "Strip 1 - Apres Promos (8 000 XPF/mois)"),
+    ("billboard", "Billboard plein écran (100 000 XPF/mois)"),
+    ("strip_1",   "Strip 1 - Après Promos (8 000 XPF/mois)"),
     ("strip_2",   "Strip 2 - Milieu page (8 000 XPF/mois)"),
     ("strip_3",   "Strip 3 - Fin de page (8 000 XPF/mois)"),
-    ("haut",      "Sidebar Haut (60 000 XPF/mois)"),
-    ("milieu",    "Sidebar Milieu (40 000 XPF/mois)"),
+    ("haut",      "Sidebar Haut (40 000 XPF/mois)"),
+    ("milieu",    "Sidebar Milieu (28 000 XPF/mois)"),
     ("bas",       "Sidebar Bas (20 000 XPF/mois)"),
 ]
 
 PRIX_PAR_EMPLACEMENT = {
     "billboard": 100000,
-    "strip_1":    52000,
-    "strip_2":    52000,
-    "strip_3":    52000,
-    "haut":      60000,
-    "milieu":    40000,
+    "strip_1":    8000,
+    "strip_2":    8000,
+    "strip_3":    8000,
+    "haut":      40000,
+    "milieu":    28000,
     "bas":       20000,
 }
 
